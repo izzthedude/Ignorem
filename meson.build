@@ -7,11 +7,9 @@ project('ignorem',
 i18n = import('i18n')
 gnome = import('gnome')
 
-
-
 subdir('data')
-subdir('src')
 subdir('po')
+subdir('ignorem')
 
 gnome.post_install(
      glib_compile_schemas: true,

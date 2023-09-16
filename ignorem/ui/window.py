@@ -1,6 +1,4 @@
-#!@PYTHON@
-
-# ignorem.in
+# window.py
 #
 # Copyright 2023 Izzat Z.
 #
@@ -19,28 +17,23 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-import os
-import sys
-import signal
-import locale
-import gettext
+from gi.repository import Adw
+from gi.repository import Gtk
 
-VERSION = '@VERSION@'
-pkgdatadir = '@pkgdatadir@'
-localedir = '@localedir@'
 
-sys.path.insert(1, pkgdatadir)
-signal.signal(signal.SIGINT, signal.SIG_DFL)
-locale.bindtextdomain('ignorem', localedir)
-locale.textdomain('ignorem')
-gettext.install('ignorem', localedir)
+@Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/window")
+class MainWindow(Adw.ApplicationWindow):
+    __gtype_name__ = "IgnoremWindow"
 
-if __name__ == '__main__':
-    import gi
+    label = Gtk.Template.Child()
 
-    from gi.repository import Gio
-    resource = Gio.Resource.load(os.path.join(pkgdatadir, 'ignorem.gresource'))
-    resource._register()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._setup_help_overlay()
 
-    from ignorem import main
-    sys.exit(main.main(VERSION))
+    def _setup_help_overlay(self):
+        builder = Gtk.Builder.new_from_resource(
+            "/com/github/izzthedude/Ignorem/ui/help-overlay"
+        )
+        shortcuts_window = builder.get_object("help_overlay")
+        self.set_help_overlay(shortcuts_window)
