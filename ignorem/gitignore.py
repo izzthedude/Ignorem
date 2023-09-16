@@ -52,41 +52,34 @@ def list_json() -> list[TemplateData]:
     list[TemplateData]
         A list of TemplateData objects.
     """
-    response = _list("json")
-    data: dict[str, dict] = json.loads(response.content)
-    result = [TemplateData(**template) for key, template in data.items()]
-    return result
+    data = _get_list()
+    return [TemplateData(**template) for template in data.values()]
 
 
 def list_keys() -> list[str]:
     """
-    Gets a list of gitignore templates keys.
+    Gets a list of gitignore templates' keys.
 
     Returns
     -------
     list[str]
-        A list of template keys.
+        A list of templates' keys.
     """
-    response = _list("lines")
-    result = response.text.split("\n")
-    return result
+    data = _get_list()
+    return list(data.keys())
 
 
-def _list(format_: str) -> requests.Response:
-    """
-    Gets a list of gitignore templates in the given format.
+def _get_list() -> dict[str, dict]:
+    """Requests a gitignore templates list and converts the response to something that
+    Python can understand."""
+    response = _request_list("json")
+    return json.loads(response.text)
 
-    Parameters
-    ----------
-    format_ : str
-        The format of the templates list.
-        Possible values: 'lines' and 'json'
 
-    Returns
-    -------
-    requests.Response
-        A Response object of the requested templates list.
-    """
-    response = requests.get(f"{API_URL}/list", params={"format": format_})
+def _request_list(list_format: str = "json") -> requests.Response:
+    """Gets a list of gitignore templates in the given format. This function is somewhat
+    redundant. It's really only here to show that the API allows options when retrieving
+    a list. Nonetheless, this module will enforce the use of the JSON format."""
+    response = requests.get(f"{API_URL}/list", params={"format": list_format})
     response.raise_for_status()
     return response
