@@ -22,15 +22,16 @@ import gi
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Gio, Adw
+from gi.repository import Gio, Gtk, Adw
 
 from ignorem.ui.window import MainWindow
+from ignorem.enums import Ignorem
 
 
 class IgnoremApp(Adw.Application):
     def __init__(self):
         super().__init__(
-            application_id="com.github.izzthedude.Ignorem",
+            application_id=Ignorem.ID,
             flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
         )
         self.create_action("quit", lambda *_: self.quit(), ["<primary>q"])
@@ -47,12 +48,15 @@ class IgnoremApp(Adw.Application):
     def on_about_action(self, widget, _):
         about = Adw.AboutWindow(
             transient_for=self.props.active_window,
-            application_name="ignorem",
-            application_icon="com.github.izzthedude.Ignorem",
-            developer_name="Izzat Z.",
-            version="0.1.0",
-            developers=["Izzat Z."],
+            application_name=Ignorem.NAME,
+            application_icon=Ignorem.ID,
+            version=Ignorem.VERSION,
+            developer_name=Ignorem.AUTHOR,
+            developers=[Ignorem.AUTHOR],
             copyright="© 2023 Izzat Z.",
+            license_type=Gtk.License.GPL_3_0,
+            website=Ignorem.WEBSITE,
+            issue_url=Ignorem.ISSUE_URL,
         )
         about.present()
 

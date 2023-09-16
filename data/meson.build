@@ -1,4 +1,4 @@
-pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.project_name())
+i18n = import('i18n')
 gnome = import('gnome')
 python = import('python')
 

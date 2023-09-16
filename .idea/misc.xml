@@ -2,7 +2,7 @@
 <project version="4">
   <component name="Black">
     <option name="enabledOnReformat" value="true" />
-    <option name="sdkUUID" value="b704482e-9a69-4b91-a0af-b49e3f940042" />
+    <option name="sdkUUID" value="9392f90c-53b0-4084-a8c2-5e87a15438a7" />
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="Poetry (Ignorem)" project-jdk-type="Python SDK" />
 </project>
