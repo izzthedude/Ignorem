@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=ignorem
+Exec=ignorem
+Icon=com.github.izzthedude.Ignorem
+Terminal=false
+Type=Application
+Categories=GTK;
+StartupNotify=true

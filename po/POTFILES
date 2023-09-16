@@ -1,0 +1,6 @@
+data/com.github.izzthedude.Ignorem.desktop.in
+data/com.github.izzthedude.Ignorem.appdata.xml.in
+data/com.github.izzthedude.Ignorem.gschema.xml
+src/main.py
+src/window.py
+src/window.ui
