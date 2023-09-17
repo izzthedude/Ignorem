@@ -19,10 +19,10 @@
 
 import sys
 
-from gi.repository import Adw, Gio, Gtk
+from gi.repository import Adw, GObject, Gio, Gtk
 
 from ignorem.enums import Ignorem
-from ignorem.ui.window_main import MainWindow
+from ignorem.ui import MainWindow, PreviewPage, SearchPage, utils
 
 
 class IgnoremApp(Adw.Application):
@@ -31,9 +31,9 @@ class IgnoremApp(Adw.Application):
             application_id=Ignorem.ID,
             flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
         )
-        self.create_action("quit", lambda *_: self.quit(), ["<primary>q"])
-        self.create_action("about", self.on_about_action)
-        self.create_action("preferences", self.on_preferences_action)
+        utils.create_action(self, "preferences", self.on_preferences_action)
+        utils.create_action(self, "about", self.on_about_action)
+        utils.create_action(self, "quit", lambda *_: self.quit(), ["<primary>q"])
         self.set_accels_for_action("win.show-help-overlay", ["<primary>question"])
 
     def do_activate(self):
@@ -60,15 +60,14 @@ class IgnoremApp(Adw.Application):
     def on_preferences_action(self, widget, _):
         print("app.preferences action activated")
 
-    def create_action(self, name, callback, shortcuts=None):
-        action = Gio.SimpleAction.new(name, None)
-        action.connect("activate", callback)
-        self.add_action(action)
-        if shortcuts:
-            self.set_accels_for_action(f"app.{name}", shortcuts)
+
+def _register_types():
+    GObject.type_register(MainWindow)
+    GObject.type_register(SearchPage)
+    GObject.type_register(PreviewPage)
 
 
 def main(version):
-    """The application's entry point."""
+    _register_types()
     app = IgnoremApp()
     return app.run(sys.argv)

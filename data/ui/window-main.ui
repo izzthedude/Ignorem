@@ -11,93 +11,15 @@
           <object class="AdwNavigationView">
             <!-- Search Page -->
             <child>
-              <object class="AdwNavigationPage">
-                <property name="tag">page-search</property>
-                <property name="title" translatable="yes">gitignore.io</property>
-                <property name="child">
-                  <object class="AdwToolbarView">
-                    <child type="top">
-                      <!-- Header bar -->
-                      <object class="AdwHeaderBar">
-                        <property name='show-back-button'>false</property>
-                        <!-- Menu button -->
-                        <child type='end'>
-                          <object class="GtkMenuButton">
-                            <property name="icon-name">open-menu-symbolic</property>
-                            <property name="menu-model">primary_menu</property>
-                          </object>
-                        </child>
-                        <!-- Debug button -->
-                        <child type='end'>
-                          <object class="GtkButton" id="debug_button">
-                            <property name="visible">false</property>
-                            <property name="icon-name">dialog-warning-symbolic</property>
-                            <property name="action-name">navigation.push</property>
-                            <property name="action-target">'page-preview'</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <!-- Contents of the search page -->
-                    <property name="content">
-                    </property>
-                  </object>
-                </property>
-              </object>
+              <object class="SearchPage" id="search_page"/>
             </child>
             <!-- Preview Page -->
             <child>
-              <object class="AdwNavigationPage">
-                <property name="tag">page-preview</property>
-                <property name="child">
-                  <object class="AdwToolbarView">
-                    <child type="top">
-                      <!-- Header bar -->
-                      <object class="AdwHeaderBar">
-                        <!-- Save button -->
-                        <child type='end'>
-                          <object class="GtkButton" id="save_button">
-                            <property name="icon-name">document-save-symbolic</property>
-                            <property name="tooltip-text">Save template to file</property>
-                          </object>
-                        </child>
-                        <!-- Copy button -->
-                        <child type='end'>
-                          <object class="GtkButton" id="copy_button">
-                            <property name="icon-name">edit-copy-symbolic</property>
-                            <property name="tooltip-text">Copy template to clipboard</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <!-- Contents of the page -->
-                    <property name="content">
-                    </property>
-                  </object>
-                </property>
-              </object>
+              <object class="PreviewPage" id="preview_page"/>
             </child>
           </object>
-
         </child>
       </object>
     </child>
   </template>
-
-  <menu id="primary_menu">
-    <section>
-      <item>
-        <attribute name="label" translatable="yes">_Preferences</attribute>
-        <attribute name="action">app.preferences</attribute>
-      </item>
-      <item>
-        <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
-        <attribute name="action">win.show-help-overlay</attribute>
-      </item>
-      <item>
-        <attribute name="label" translatable="yes">_About Ignorem</attribute>
-        <attribute name="action">app.about</attribute>
-      </item>
-    </section>
-  </menu>
 </interface>

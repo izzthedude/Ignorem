@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="Adw" version="1.0"/>
+  <template class="PreviewPage" parent="AdwNavigationPage">
+    <property name="tag">page-preview</property>
+    <property name="child">
+      <object class="AdwToolbarView">
+        <child type="top">
+          <!-- Header bar -->
+          <object class="AdwHeaderBar">
+            <!-- Save button -->
+            <child type='end'>
+              <object class="GtkButton" id="save_button">
+                <property name="icon-name">document-save-symbolic</property>
+                <property name="tooltip-text">Save template to file</property>
+              </object>
+            </child>
+            <!-- Copy button -->
+            <child type='end'>
+              <object class="GtkButton" id="copy_button">
+                <property name="icon-name">edit-copy-symbolic</property>
+                <property name="tooltip-text">Copy template to clipboard</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <!-- Contents of the page -->
+        <property name="content">
+        </property>
+      </object>
+    </property>
+  </template>
+</interface>
