@@ -1,4 +1,4 @@
-# window.py
+# window_main.py
 #
 # Copyright 2023 Izzat Z.
 #
@@ -17,15 +17,12 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Adw
-from gi.repository import Gtk
+from gi.repository import Adw, Gtk
 
 
-@Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/window")
+@Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/window-main")
 class MainWindow(Adw.ApplicationWindow):
-    __gtype_name__ = "IgnoremWindow"
-
-    label = Gtk.Template.Child()
+    __gtype_name__ = "MainWindow"
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

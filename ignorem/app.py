@@ -19,10 +19,10 @@
 
 import sys
 
-from gi.repository import Gio, Gtk, Adw
+from gi.repository import Adw, Gio, Gtk
 
-from ignorem.ui.window import MainWindow
 from ignorem.enums import Ignorem
+from ignorem.ui.window_main import MainWindow
 
 
 class IgnoremApp(Adw.Application):

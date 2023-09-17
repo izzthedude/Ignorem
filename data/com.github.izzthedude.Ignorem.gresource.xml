@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/com/github/izzthedude/Ignorem/ui">
-    <file preprocess="xml-stripblanks" alias="window">ui/window.ui</file>
+    <file preprocess="xml-stripblanks" alias="window-main">ui/window-main.ui</file>
+    <!--    <file preprocess="xml-stripblanks" alias="page-search">ui/page-search.ui</file>-->
+    <!--    <file preprocess="xml-stripblanks" alias="page-preview">ui/page-preview.ui</file>-->
     <file preprocess="xml-stripblanks" alias="help-overlay">ui/help-overlay.ui</file>
   </gresource>
 </gresources>
