@@ -31,7 +31,100 @@
         </child>
         <!-- Contents of the search page -->
         <property name="content">
+          <object class="GtkScrolledWindow">
+            <child>
+              <object class="GtkBox" id="content_box">
+                <property name="orientation">vertical</property>
+                <property name="vexpand">true</property>
+                <property name="hexpand">true</property>
+                <property name="valign">start</property>
+                <property name="halign">center</property>
+                <property name="margin-top">40</property>
+                <property name="spacing">20</property>
+                <!-- Container for title and subtitle -->
+                <child>
+                  <object class="GtkBox" id="title_container">
+                    <property name="orientation">vertical</property>
+                    <property name="vexpand">true</property>
+                    <property name="hexpand">true</property>
+                    <property name="valign">center</property>
+                    <property name="halign">center</property>
+                    <property name="spacing">10</property>
+                    <!-- Box for title icon and text -->
+                    <child>
+                      <object class="GtkBox" id="title_box">
+                        <property name="orientation">horizontal</property>
+                        <property name="vexpand">true</property>
+                        <property name="hexpand">true</property>
+                        <property name="valign">center</property>
+                        <property name="halign">center</property>
+                        <property name="spacing">10</property>
+                        <!-- Title icon -->
+                        <child>
+                          <object class="GtkImage" id="title_icon">
+                            <property name="icon-name">git-symbolic</property>
+                            <style>
+                              <class name="large-icons"/>
+                            </style>
+                          </object>
+                        </child>
+                        <!-- Title text -->
+                        <child>
+                          <object class="GtkLabel" id="title_label">
+                            <property name="label">gitignore.io</property>
+                            <style>
+                              <class name="title-1"/>
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <!-- Subtitle text -->
+                    <child>
+                      <object class="GtkLabel" id="subtitle_label">
+                        <property name="label">Create useful .gitignore files for your project</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <!-- Template search entry -->
+                <child>
+                  <object class="GtkSearchEntry" id="search_entry">
+                    <property name="placeholder-text">Search templates</property>
+                    <property name="search-delay">500</property>
+                    <signal name="search-changed" handler="on_search_changed"/>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwPreferencesGroup">
+                    <property name="title">Selected templates</property>
+                    <property name="visible">false</property>
+                    <child type="header-suffix">
+                      <object class="GtkButton" id="clear_list_button">
+                        <property name="icon-name">edit-clear-all-symbolic</property>
+                        <property name="tooltip-text">Clear list</property>
+                        <signal name="clicked" handler="on_clear_list"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
         </property>
+        <child type="bottom">
+          <object class="GtkActionBar" id="search_toolbar">
+            <property name="revealed">false</property>
+            <child type="center">
+              <object class="GtkButton" id="create_button">
+                <property name="label">Create</property>
+                <style>
+                  <class name="suggested-action"/>
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
       </object>
     </property>
   </template>
