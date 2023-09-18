@@ -8,39 +8,50 @@ from ignorem.controller import AppController
 class SearchPage(Adw.NavigationPage):
     __gtype_name__ = "SearchPage"
 
-    refresh_button: Gtk.Button = Gtk.Template.Child()
+    search_stack: Adw.ViewStack = Gtk.Template.Child()
+    search_page: Adw.ViewStackPage = Gtk.Template.Child()
+    loading_page: Adw.ViewStackPage = Gtk.Template.Child()
     # TODO: Figure out how to give search suggestions
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._controller = AppController.instance()
-        self._refreshing: bool = False
+        self._is_loading: bool = False
+        self.bind_property(
+            "is-loading",
+            self.search_stack,
+            "visible-child-name",
+            GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+            lambda *_: self.loading_page.get_name()
+            if self.is_loading
+            else self.search_page.get_name(),
+        )
 
         # Fetch list on page init
         utils.ui.run_async(self, self._controller.fetch_list, self.on_refresh_finished)
-        self.refreshing = True
+        self.is_loading = True
 
     @Gtk.Template.Callback()
     def on_refresh(self, button: Gtk.Button):
-        if not self._refreshing:
+        if not self.is_loading:
             utils.ui.run_async(
                 self,
                 self._controller.fetch_list,
                 self.on_refresh_finished,
                 func_args=(True,),
             )
-            self.refreshing = True
+            self.is_loading = True
 
     def on_refresh_finished(self):
-        self.refreshing = False
+        self.is_loading = False
 
-    @GObject.Property(type=bool, default=False, nick="refreshing")
-    def refreshing(self) -> bool:
-        return self._refreshing
+    @GObject.Property(type=bool, default=False, nick="is-loading")
+    def is_loading(self) -> bool:
+        return self._is_loading
 
-    @refreshing.setter
-    def refreshing(self, value: bool):
-        self._refreshing = value
+    @is_loading.setter
+    def is_loading(self, value: bool):
+        self._is_loading = value
 
     @Gtk.Template.Callback()
     def on_search_changed(self, entry: Gtk.SearchEntry):
