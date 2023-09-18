@@ -19,6 +19,7 @@ configure_file(
 ignorem_sources = [
   '__init__.py',
   'app.py',
+  'gitignore.py',
 ]
 install_subdir('ui', install_dir: moduledir)
 install_data(ignorem_sources, install_dir: moduledir)
