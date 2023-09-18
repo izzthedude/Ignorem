@@ -22,10 +22,13 @@ class AppController:
         self._templates: list[TemplateData] = []
         self._selected_templates: list[TemplateData] = []
 
-    def fetch_list(self) -> list[TemplateData]:
+    def fetch_list(self, force_fetch: bool = False) -> list[TemplateData]:
         cache_file = Path(Paths.CACHE_FILE).absolute()
-        if not cache_file.exists():
-            utils.write_json(gitignore.list_json(), Paths.CACHE_FILE)
+        if not cache_file.exists() or force_fetch:
+            utils.write_json(
+                [template.as_dict() for template in gitignore.list_json()],
+                Paths.CACHE_FILE,
+            )
 
         self._templates = utils.read_json(Paths.CACHE_FILE)
         return self._templates
