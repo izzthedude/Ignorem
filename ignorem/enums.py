@@ -14,3 +14,4 @@ class Ignorem:
 
 class Paths:
     CACHE_DIR: str = str(Path(os.environ.get("XDG_CACHE_DIR"), Ignorem.ID).absolute())
+    CACHE_FILE: str = str(Path(CACHE_DIR, "templates_cache.json"))
