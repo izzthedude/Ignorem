@@ -4,6 +4,7 @@
   <requires lib="Adw" version="1.0"/>
   <template class="PreviewPage" parent="AdwNavigationPage">
     <property name="tag">page-preview</property>
+    <property name="title" translatable="yes">Preview</property>
     <property name="child">
       <object class="AdwToolbarView">
         <child type="top">
@@ -14,6 +15,7 @@
               <object class="GtkButton" id="save_button">
                 <property name="icon-name">document-save-symbolic</property>
                 <property name="tooltip-text">Save template to file</property>
+                <signal name="clicked" handler="on_save_template"/>
               </object>
             </child>
             <!-- Copy button -->
@@ -21,12 +23,84 @@
               <object class="GtkButton" id="copy_button">
                 <property name="icon-name">edit-copy-symbolic</property>
                 <property name="tooltip-text">Copy template to clipboard</property>
+                <signal name="clicked" handler="on_copy_template"/>
               </object>
             </child>
           </object>
         </child>
         <!-- Contents of the page -->
         <property name="content">
+          <object class="AdwViewStack" id="preview_stack">
+            <!-- Text preview -->
+            <child>
+              <object class="AdwViewStackPage" id="preview_text_page">
+                <property name="name">text_preview</property>
+                <property name="title">Text Preview</property>
+                <property name="child">
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="vexpand">true</property>
+                    <property name="hexpand">true</property>
+                    <property name="valign">start</property>
+                    <property name="halign">fill</property>
+                    <property name="margin-top">10</property>
+                    <property name="margin-bottom">20</property>
+                    <property name="margin-start">40</property>
+                    <property name="margin-end">40</property>
+                    <property name="spacing">10</property>
+                    <!-- Selected template pills -->
+                    <child>
+                      <object class="GtkFlowBox" id="selected_flowbox">
+                        <property name="selection-mode">none</property>
+                      </object>
+                    </child>
+                    <!-- Text view -->
+                    <child>
+                      <object class="GtkScrolledWindow">
+                        <property name="propagate-natural-height">true</property>
+                        <property name="propagate-natural-width">true</property>
+                        <child>
+                          <object class="GtkTextView" id="preview_textview">
+                            <property name="editable">false</property>
+                            <property name="cursor-visible">false</property>
+                            <property name="monospace">true</property>
+                            <property name="wrap-mode">word</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <!-- Loading spinner -->
+            <child>
+              <object class="AdwViewStackPage" id="preview_loading_page">
+                <property name="name">preview_loading</property>
+                <property name="title">Preview Loading</property>
+                <property name="child">
+                  <object class="GtkBox">
+                    <property name="valign">center</property>
+                    <property name="halign">center</property>
+                    <child>
+                      <object class="GtkSpinner" id="preview_spinner">
+                        <property name="height-request">30</property>
+                        <property name="width-request">30</property>
+                        <property name="spinning">true</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <!-- Failed page -->
+            <child>
+              <object class="AdwStatusPage" id="preview_status_page">
+                <property name="icon-name">dialog-error-symbolic</property>
+                <property name="title">An error occurred</property>
+              </object>
+            </child>
+          </object>
         </property>
       </object>
     </property>
