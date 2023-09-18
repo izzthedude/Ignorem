@@ -22,7 +22,8 @@ import sys
 from gi.repository import Adw, GObject, Gio, Gtk
 
 from ignorem.enums import Ignorem
-from ignorem.ui import MainWindow, PreviewPage, SearchPage, TemplateRow, utils
+from ignorem.ui import MainWindow, PreviewPage, SearchPage, utils
+from ignorem.ui.widgets import TemplateRow, TemplatesList
 
 
 class IgnoremApp(Adw.Application):
@@ -65,6 +66,7 @@ def _register_types():
     GObject.type_register(MainWindow)
     GObject.type_register(SearchPage)
     GObject.type_register(PreviewPage)
+    GObject.type_register(TemplatesList)
     GObject.type_register(TemplateRow)
 
 

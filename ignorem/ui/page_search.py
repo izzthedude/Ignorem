@@ -9,8 +9,17 @@ class SearchPage(Adw.NavigationPage):
 
     @Gtk.Template.Callback()
     def on_search_changed(self, entry: Gtk.SearchEntry):
-        print(entry.get_text())
+        text = entry.get_text()
+        print(text)
 
     @Gtk.Template.Callback()
     def on_clear_list(self, button: Gtk.Button):
         print("clear")
+
+    @Gtk.Template.Callback()
+    def on_create_clicked(self, button: Gtk.Button):
+        print("clear")
+
+    @Gtk.Template.Callback()
+    def on_debug_clicked(self, button: Gtk.Button):
+        print("debug")

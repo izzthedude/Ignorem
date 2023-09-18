@@ -4,7 +4,7 @@
   <requires lib="Adw" version="1.0"/>
   <template class="SearchPage" parent="AdwNavigationPage">
     <property name="tag">page-search</property>
-    <property name="title" translatable="yes">Ignorem</property>
+    <property name="title" translatable="yes">Search</property>
     <property name="child">
       <object class="AdwToolbarView">
         <child type="top">
@@ -23,8 +23,7 @@
               <object class="GtkButton" id="debug_button">
                 <property name="visible">true</property>
                 <property name="icon-name">dialog-warning-symbolic</property>
-                <property name="action-name">navigation.push</property>
-                <property name="action-target">'page-preview'</property>
+                <signal name="clicked" handler="on_debug_clicked"/>
               </object>
             </child>
           </object>
@@ -62,7 +61,7 @@
                         <!-- Title icon -->
                         <child>
                           <object class="GtkImage" id="title_icon">
-                            <property name="icon-name">git-symbolic</property>
+                            <property name="icon-name">com.github.izzthedude.Ignorem</property>
                             <style>
                               <class name="large-icons"/>
                             </style>
@@ -71,7 +70,7 @@
                         <!-- Title text -->
                         <child>
                           <object class="GtkLabel" id="title_label">
-                            <property name="label">gitignore.io</property>
+                            <property name="label">Ignorem</property>
                             <style>
                               <class name="title-1"/>
                             </style>
@@ -96,7 +95,8 @@
                   </object>
                 </child>
                 <child>
-                  <object class="AdwPreferencesGroup">
+                  <!-- Selected templates list -->
+                  <object class="TemplatesList" id="templates_list">
                     <property name="title">Selected templates</property>
                     <property name="visible">false</property>
                     <child type="header-suffix">
@@ -112,8 +112,9 @@
             </child>
           </object>
         </property>
+        <!-- Bottom action bar -->
         <child type="bottom">
-          <object class="GtkActionBar" id="search_toolbar">
+          <object class="GtkActionBar" id="search_actionbar">
             <property name="revealed">false</property>
             <child type="center">
               <object class="GtkButton" id="create_button">
@@ -121,6 +122,9 @@
                 <style>
                   <class name="suggested-action"/>
                 </style>
+                <signal name="clicked" handler="on_create_clicked"/>
+                <property name="action-name">navigation.push</property>
+                <property name="action-target">'page-preview'</property>
               </object>
             </child>
           </object>
