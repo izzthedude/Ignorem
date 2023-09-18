@@ -30,7 +30,7 @@
             <!-- Debug button -->
             <child type='end'>
               <object class="GtkButton" id="debug_button">
-                <property name="visible">false</property>
+                <property name="visible">true</property>
                 <property name="icon-name">dialog-warning-symbolic</property>
                 <signal name="clicked" handler="on_debug_clicked"/>
               </object>
@@ -105,16 +105,10 @@
                 </child>
                 <child>
                   <!-- Selected templates list -->
-                  <object class="TemplatesList" id="templates_list">
-                    <property name="title">Selected templates</property>
-                    <property name="visible">false</property>
-                    <child type="header-suffix">
-                      <object class="GtkButton" id="clear_list_button">
-                        <property name="icon-name">edit-clear-all-symbolic</property>
-                        <property name="tooltip-text">Clear list</property>
-                        <signal name="clicked" handler="on_clear_list"/>
-                      </object>
-                    </child>
+                  <object class="TemplatePillBox" id="search_selected_box">
+                    <property name="halign">center</property>
+                    <property name="min-children-per-line">3</property>
+                    <property name="max-children-per-line">3</property>
                   </object>
                 </child>
               </object>

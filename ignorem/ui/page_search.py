@@ -48,10 +48,6 @@ class SearchPage(Adw.NavigationPage):
         print(text)
 
     @Gtk.Template.Callback()
-    def on_clear_list(self, button: Gtk.Button):
-        print("clear")
-
-    @Gtk.Template.Callback()
     def on_create_clicked(self, button: Gtk.Button):
         print("clear")
 

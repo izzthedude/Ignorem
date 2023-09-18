@@ -25,7 +25,7 @@ from ignorem import utils
 from ignorem.controller import AppController
 from ignorem.enums import Ignorem
 from ignorem.ui import MainWindow, PreviewPage, SearchPage
-from ignorem.ui.widgets import TemplatePill, TemplateRow, TemplatesList
+from ignorem.ui.widgets import TemplatePill, TemplatePillBox
 
 
 class IgnoremApp(Adw.Application):
@@ -68,8 +68,7 @@ def _register_types():
     GObject.type_register(MainWindow)
     GObject.type_register(SearchPage)
     GObject.type_register(PreviewPage)
-    GObject.type_register(TemplatesList)
-    GObject.type_register(TemplateRow)
+    GObject.type_register(TemplatePillBox)
     GObject.type_register(TemplatePill)
 
 

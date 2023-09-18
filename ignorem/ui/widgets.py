@@ -1,50 +1,38 @@
-from gi.repository import Adw, Gtk
+from gi.repository import Gtk
 
 from ignorem.gitignore import TemplateData
 
 
-class TemplatesList(Adw.PreferencesGroup):
-    __gtype_name__ = "TemplatesList"
+class TemplatePillBox(Gtk.FlowBox):
+    __gtype_name__ = "TemplatePillBox"
 
-    def add(self, child: "TemplateRow"):
-        """Leaving implementation for later"""
-        super().add(child)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.set_selection_mode(Gtk.SelectionMode.NONE)
 
-    def remove(self, child: "TemplateRow"):
-        """Leaving implementation for later"""
+    def append(self, pill: "TemplatePill") -> TemplateData:
+        pill.delete_button.connect("clicked", lambda _: self.remove(pill))
+        super().append(pill)
+        return pill.template
+
+    def remove(self, child: "TemplatePill") -> TemplateData:
         super().remove(child)
-
-    def clear(self):
-        """Leaving implementation for later"""
-
-
-class TemplateRow(Adw.ActionRow):
-    __gtype_name__ = "TemplateRow"
-
-    def __init__(self, template: TemplateData, source_group: TemplatesList):
-        super().__init__()
-        self.template = template
-        self.source_group = source_group
-
-        self.delete_button = Gtk.Button(icon_name="user-trash-symbolic")
-        self.button_box = Gtk.Box(valign=Gtk.Align.CENTER, halign=Gtk.Align.CENTER)
-        self.button_box.append(self.delete_button)
-
-        self.set_title(template.name)
-        self.add_suffix(self.button_box)
-
-        self.delete_button.connect("clicked", lambda _: self.source_group.remove(self))
+        return child.template
 
 
 class TemplatePill(Gtk.Box):
     __gtype_name__ = "TemplatePill"
 
-    def __init__(self, text: str, deletable: bool = False, **kwargs):
+    def __init__(self, template: TemplateData, deletable: bool = True, **kwargs):
         super().__init__(**kwargs)
+        self.template = template
+
         self._text_start_offset: int = 5
         self._text_end_offset: int = 14 if deletable else 5
         final_text = (
-            (" " * self._text_start_offset) + text + (" " * self._text_end_offset)
+            (" " * self._text_start_offset)
+            + self.template.name
+            + (" " * self._text_end_offset)
         )
 
         overlay = Gtk.Overlay()
