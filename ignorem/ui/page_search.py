@@ -8,6 +8,10 @@ class SearchPage(Adw.NavigationPage):
     # TODO: Figure out how to give search suggestions
 
     @Gtk.Template.Callback()
+    def on_refresh(self, button: Gtk.Button):
+        print("refresh")
+
+    @Gtk.Template.Callback()
     def on_search_changed(self, entry: Gtk.SearchEntry):
         text = entry.get_text()
         print(text)

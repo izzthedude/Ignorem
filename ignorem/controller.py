@@ -6,7 +6,19 @@ from ignorem.gitignore import TemplateData
 
 
 class AppController:
+    _instance: "AppController" = None
+
+    @classmethod
+    def instance(cls):
+        return AppController._instance if AppController._instance else cls()
+
     def __init__(self):
+        if AppController._instance:
+            raise Exception(
+                "An instance of this class already exists. "
+                "Use 'AppController.instance()' to get it."
+            )
+
         self._templates: list[TemplateData] = []
         self._selected_templates: list[TemplateData] = []
 

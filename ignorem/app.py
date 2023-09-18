@@ -22,6 +22,7 @@ import sys
 from gi.repository import Adw, GObject, Gio, Gtk
 
 from ignorem import utils
+from ignorem.controller import AppController
 from ignorem.enums import Ignorem
 from ignorem.ui import MainWindow, PreviewPage, SearchPage
 from ignorem.ui.widgets import TemplatePill, TemplateRow, TemplatesList
@@ -74,5 +75,6 @@ def _register_types():
 
 def main(version):
     _register_types()
+    AppController.instance()  # Initialise controller
     app = IgnoremApp()
     return app.run(sys.argv)

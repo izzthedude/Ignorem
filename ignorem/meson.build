@@ -20,6 +20,8 @@ ignorem_sources = [
   '__init__.py',
   'app.py',
   'gitignore.py',
+  'controller.py',
 ]
+install_subdir('utils', install_dir: moduledir)
 install_subdir('ui', install_dir: moduledir)
 install_data(ignorem_sources, install_dir: moduledir)
