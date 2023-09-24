@@ -30,7 +30,9 @@ class AppController:
                 Paths.CACHE_FILE,
             )
 
-        self._templates = utils.read_json(Paths.CACHE_FILE)
+        self._templates = [
+            TemplateData(**template) for template in utils.read_json(Paths.CACHE_FILE)
+        ]
         return self._templates
 
     def templates(self) -> list[TemplateData]:

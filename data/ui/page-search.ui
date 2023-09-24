@@ -45,80 +45,86 @@
               <object class="AdwViewStackPage" id="search_page">
                 <property name="name">search-page</property>
                 <property name="child">
-                  <object class="GtkScrolledWindow">
+                  <object class="GtkOverlay" id="overlay">
                     <child>
-                      <object class="GtkBox" id="content_box">
-                        <property name="orientation">vertical</property>
-                        <property name="vexpand">true</property>
-                        <property name="hexpand">true</property>
-                        <property name="valign">start</property>
-                        <property name="halign">center</property>
-                        <property name="margin-top">40</property>
-                        <property name="spacing">20</property>
-                        <!-- Container for title and subtitle -->
+                      <object class="GtkScrolledWindow">
                         <child>
-                          <object class="GtkBox" id="title_container">
+                          <object class="GtkBox" id="content_box">
                             <property name="orientation">vertical</property>
                             <property name="vexpand">true</property>
                             <property name="hexpand">true</property>
-                            <property name="valign">center</property>
+                            <property name="valign">start</property>
                             <property name="halign">center</property>
-                            <property name="spacing">10</property>
-                            <!-- Box for title icon and text -->
+                            <property name="margin-top">40</property>
+                            <property name="spacing">20</property>
+                            <!-- Container for title and subtitle -->
                             <child>
-                              <object class="GtkBox" id="title_box">
-                                <property name="orientation">horizontal</property>
+                              <object class="GtkBox" id="title_container">
+                                <property name="orientation">vertical</property>
                                 <property name="vexpand">true</property>
                                 <property name="hexpand">true</property>
                                 <property name="valign">center</property>
                                 <property name="halign">center</property>
                                 <property name="spacing">10</property>
-                                <!-- Title icon -->
+                                <!-- Box for title icon and text -->
                                 <child>
-                                  <object class="GtkImage" id="title_icon">
-                                    <property name="icon-name">com.github.izzthedude.Ignorem</property>
-                                    <style>
-                                      <class name="large-icons"/>
-                                    </style>
+                                  <object class="GtkBox" id="title_box">
+                                    <property name="orientation">horizontal</property>
+                                    <property name="vexpand">true</property>
+                                    <property name="hexpand">true</property>
+                                    <property name="valign">center</property>
+                                    <property name="halign">center</property>
+                                    <property name="spacing">10</property>
+                                    <!-- Title icon -->
+                                    <child>
+                                      <object class="GtkImage" id="title_icon">
+                                        <property name="icon-name">com.github.izzthedude.Ignorem</property>
+                                        <style>
+                                          <class name="large-icons"/>
+                                        </style>
+                                      </object>
+                                    </child>
+                                    <!-- Title text -->
+                                    <child>
+                                      <object class="GtkLabel" id="title_label">
+                                        <property name="label">Ignorem</property>
+                                        <style>
+                                          <class name="title-1"/>
+                                        </style>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
-                                <!-- Title text -->
+                                <!-- Subtitle text -->
                                 <child>
-                                  <object class="GtkLabel" id="title_label">
-                                    <property name="label">Ignorem</property>
-                                    <style>
-                                      <class name="title-1"/>
-                                    </style>
+                                  <object class="GtkLabel" id="subtitle_label">
+                                    <property name="label">Create useful .gitignore files for your project
+                                    </property>
                                   </object>
                                 </child>
                               </object>
                             </child>
-                            <!-- Subtitle text -->
+                            <!-- Template search entry -->
                             <child>
-                              <object class="GtkLabel" id="subtitle_label">
-                                <property name="label">Create useful .gitignore files for your project
-                                </property>
+                              <object class="GtkSearchEntry" id="search_entry">
+                                <property name="placeholder-text">Search templates</property>
+                                <signal name="search-changed" handler="on_search_changed"/>
                               </object>
                             </child>
-                          </object>
-                        </child>
-                        <!-- Template search entry -->
-                        <child>
-                          <object class="GtkSearchEntry" id="search_entry">
-                            <property name="placeholder-text">Search templates</property>
-                            <property name="search-delay">500</property>
-                            <signal name="search-changed" handler="on_search_changed"/>
-                          </object>
-                        </child>
-                        <child>
-                          <!-- Selected templates list -->
-                          <object class="TemplatePillBox" id="search_selected_box">
-                            <property name="halign">center</property>
-                            <property name="min-children-per-line">3</property>
-                            <property name="max-children-per-line">3</property>
+                            <child>
+                              <!-- Selected templates list -->
+                              <object class="TemplatePillBox" id="search_selected_box">
+                                <property name="halign">center</property>
+                                <property name="min-children-per-line">3</property>
+                                <property name="max-children-per-line">3</property>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>
+                    </child>
+                    <child type="overlay">
+                      <object class="SearchSuggestionsBox" id="suggestions_box"/>
                     </child>
                   </object>
                 </property>
