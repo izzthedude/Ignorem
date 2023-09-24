@@ -112,7 +112,7 @@ class SearchPage(Adw.NavigationPage):
         self.suggestions_box.set_size_request(entry_allocation.width, -1)
 
     def _update_actionbar_visibility(self):
-        self.search_actionbar.set_revealed(bool(self.suggestions_pillbox.pills()))
+        self.search_actionbar.set_revealed(bool(self.selected_pillbox.pills()))
 
     def _init(self):
         # Have to bind here cause it wouldn't work in the ui file for some reason
