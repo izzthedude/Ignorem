@@ -31,7 +31,6 @@ class SearchPage(Adw.NavigationPage):
         super().__init__(**kwargs)
         self._controller = AppController.instance()
         self._is_loading: bool = False
-        self._current_filter: str = ""
         self._init()
 
         # Fetch list on page init
@@ -83,7 +82,7 @@ class SearchPage(Adw.NavigationPage):
 
     @Gtk.Template.Callback()
     def on_search_changed(self, entry: Gtk.SearchEntry):
-        self._current_filter = entry.get_text()
+        text = entry.get_text()
 
         self.suggestions_box.templatepill_box.invalidate_sort()
         self.suggestions_box.templatepill_box.invalidate_filter()
@@ -92,10 +91,10 @@ class SearchPage(Adw.NavigationPage):
         results = [
             template
             for template in self._controller.templates()
-            if self._current_filter.lower() in template.name.lower()
+            if text.lower() in template.name.lower()
         ]
         self.suggestions_box.set_results_found(bool(results))
-        self.suggestions_box.set_visible(bool(self._current_filter))
+        self.suggestions_box.set_visible(bool(text))
 
     @Gtk.Template.Callback()
     def on_create_clicked(self, button: Gtk.Button):
@@ -114,10 +113,6 @@ class SearchPage(Adw.NavigationPage):
         self.search_actionbar.set_revealed(bool(self.selected_pills_box.pills))
 
     def _init(self):
-        pill_box = self.suggestions_box.templatepill_box
-        pill_box.set_filter_func(self._pillbox_filter_func)
-        pill_box.set_sort_func(self._pillbox_sort_func)
-
         # Have to bind here cause it wouldn't work in the ui file for some reason
         self.bind_property(
             "is-loading",
@@ -129,13 +124,43 @@ class SearchPage(Adw.NavigationPage):
             else self.search_page.get_name(),
         )
 
+        pill_box = self.suggestions_box.templatepill_box
+        pill_box.set_filter_func(self._pillbox_filter_func)
+        pill_box.set_sort_func(self._pillbox_sort_func)
+
+        # Escape/click outside the suggestion box to hide it
+        key_controller = Gtk.EventControllerKey()
+        key_controller.set_propagation_phase(Gtk.PropagationPhase.CAPTURE)
+        key_controller.connect("key-pressed", self._on_key_pressed)
+        self.overlay.add_controller(key_controller)
+
+        gesture = Gtk.GestureClick()
+        gesture.connect("pressed", self._on_mouse_clicked)
+        self.overlay.add_controller(gesture)
+
         self.overlay.connect("get-child-position", self.on_suggestions_visible)
 
     def _pillbox_filter_func(self, child: Gtk.FlowBoxChild):
         pill: TemplatePill = child.get_child()
-        return self._current_filter.lower() in pill.template.name.lower()
+        text = self.search_entry.get_text()
+        return text.lower() in pill.template.name.lower()
 
     def _pillbox_sort_func(self, child1: Gtk.FlowBoxChild, child2: Gtk.FlowBoxChild):
         pill1: TemplatePill = child1.get_child()
         pill2: TemplatePill = child2.get_child()
         return pill1.template.name.lower() > pill2.template.name.lower()
+
+    def _on_key_pressed(
+        self,
+        controller: Gtk.EventControllerKey,
+        key_value: int,
+        key_code: int,
+        state: Gdk.ModifierType,
+    ):
+        if key_value == 65307:  # Escape
+            self.suggestions_box.set_visible(False)
+
+    def _on_mouse_clicked(self, gesture: Gtk.Gesture, n_press: int, x: float, y: float):
+        allocation = self.suggestions_box.get_allocation()
+        if not allocation.contains_point(int(x), int(y)):
+            self.suggestions_box.set_visible(False)
