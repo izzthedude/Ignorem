@@ -11,15 +11,6 @@
           <!-- Header bar -->
           <object class="AdwHeaderBar">
             <property name='show-back-button'>false</property>
-            <!-- Refresh button -->
-            <child>
-              <object class="GtkButton" id="refresh_button">
-                <property name="icon-name">view-refresh-symbolic</property>
-                <property name="sensitive" bind-source="SearchPage" bind-property="is-loading"
-                          bind-flags="default | invert-boolean"/>
-                <signal name="clicked" handler="on_refresh"/>
-              </object>
-            </child>
             <!-- Menu button -->
             <child type='end'>
               <object class="GtkMenuButton">
@@ -186,8 +177,8 @@
   <menu id="primary_menu">
     <section>
       <item>
-        <attribute name="label" translatable="yes">_Preferences</attribute>
-        <attribute name="action">app.preferences</attribute>
+        <attribute name="label" translatable="yes">_Refresh templates list</attribute>
+        <attribute name="action">app.refresh</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>

@@ -37,21 +37,22 @@ from ignorem.ui.widgets import (
 class IgnoremApp(Adw.Application):
     def __init__(self):
         super().__init__(
-            application_id=Ignorem.ID,
-            flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
+            application_id=Ignorem.ID, flags=Gio.ApplicationFlags.DEFAULT_FLAGS
         )
-        utils.ui.create_action(self, "preferences", self.on_preferences_action)
+        utils.ui.create_action(self, "refresh", self.on_refresh_action)
         utils.ui.create_action(self, "about", self.on_about_action)
         utils.ui.create_action(self, "quit", lambda *_: self.quit(), ["<primary>q"])
         self.set_accels_for_action("win.show-help-overlay", ["<primary>question"])
 
     def do_activate(self):
-        win = self.props.active_window
-        if not win:
-            win = MainWindow(application=self)
-        win.present()
+        if not self.props.active_window:
+            self.main_window = MainWindow(application=self)
+        self.main_window.show()
 
-    def on_about_action(self, widget, _):
+    def on_refresh_action(self, action, _):
+        self.main_window.search_page.on_refresh()
+
+    def on_about_action(self, action, _):
         about = Adw.AboutWindow(
             transient_for=self.props.active_window,
             application_name=Ignorem.NAME,

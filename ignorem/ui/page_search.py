@@ -60,8 +60,7 @@ class SearchPage(Adw.NavigationPage):
         pill.set_sensitive(True)
         self._update_actionbar_visibility()
 
-    @Gtk.Template.Callback()
-    def on_refresh(self, button: Gtk.Button):
+    def on_refresh(self):
         if not self.is_loading:
             utils.ui.run_async(
                 self,

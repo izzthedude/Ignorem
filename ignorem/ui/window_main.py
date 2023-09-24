@@ -19,10 +19,14 @@
 
 from gi.repository import Adw, Gtk
 
+from ignorem.ui import SearchPage
+
 
 @Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/window-main")
 class MainWindow(Adw.ApplicationWindow):
     __gtype_name__ = "MainWindow"
+
+    search_page: SearchPage = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
