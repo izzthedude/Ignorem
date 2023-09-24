@@ -48,75 +48,82 @@
                   <object class="GtkOverlay" id="overlay">
                     <child>
                       <object class="GtkScrolledWindow">
+                        <property name="hscrollbar-policy">never</property>
                         <child>
                           <object class="GtkBox" id="content_box">
                             <property name="orientation">vertical</property>
-                            <property name="vexpand">true</property>
-                            <property name="hexpand">true</property>
                             <property name="valign">start</property>
                             <property name="halign">center</property>
                             <property name="margin-top">40</property>
+                            <property name="margin-start">60</property>
+                            <property name="margin-end">60</property>
                             <property name="spacing">20</property>
-                            <!-- Container for title and subtitle -->
                             <child>
-                              <object class="GtkBox" id="title_container">
+                              <object class="GtkBox">
                                 <property name="orientation">vertical</property>
-                                <property name="vexpand">true</property>
-                                <property name="hexpand">true</property>
-                                <property name="valign">center</property>
+                                <property name="valign">start</property>
                                 <property name="halign">center</property>
-                                <property name="spacing">10</property>
-                                <!-- Box for title icon and text -->
+                                <!-- Container for title and subtitle -->
                                 <child>
-                                  <object class="GtkBox" id="title_box">
-                                    <property name="orientation">horizontal</property>
+                                  <object class="GtkBox" id="title_container">
+                                    <property name="orientation">vertical</property>
                                     <property name="vexpand">true</property>
                                     <property name="hexpand">true</property>
                                     <property name="valign">center</property>
                                     <property name="halign">center</property>
                                     <property name="spacing">10</property>
-                                    <!-- Title icon -->
+                                    <!-- Box for title icon and text -->
                                     <child>
-                                      <object class="GtkImage" id="title_icon">
-                                        <property name="icon-name">com.github.izzthedude.Ignorem</property>
-                                        <style>
-                                          <class name="large-icons"/>
-                                        </style>
+                                      <object class="GtkBox" id="title_box">
+                                        <property name="orientation">horizontal</property>
+                                        <property name="vexpand">true</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="valign">center</property>
+                                        <property name="halign">center</property>
+                                        <property name="spacing">10</property>
+                                        <!-- Title icon -->
+                                        <child>
+                                          <object class="GtkImage" id="title_icon">
+                                            <property name="icon-name">com.github.izzthedude.Ignorem</property>
+                                            <style>
+                                              <class name="large-icons"/>
+                                            </style>
+                                          </object>
+                                        </child>
+                                        <!-- Title text -->
+                                        <child>
+                                          <object class="GtkLabel" id="title_label">
+                                            <property name="label">Ignorem</property>
+                                            <style>
+                                              <class name="title-1"/>
+                                            </style>
+                                          </object>
+                                        </child>
                                       </object>
                                     </child>
-                                    <!-- Title text -->
+                                    <!-- Subtitle text -->
                                     <child>
-                                      <object class="GtkLabel" id="title_label">
-                                        <property name="label">Ignorem</property>
-                                        <style>
-                                          <class name="title-1"/>
-                                        </style>
+                                      <object class="GtkLabel" id="subtitle_label">
+                                        <property name="label">Create useful .gitignore files for your project
+                                        </property>
                                       </object>
                                     </child>
                                   </object>
                                 </child>
-                                <!-- Subtitle text -->
+                                <!-- Template search entry -->
                                 <child>
-                                  <object class="GtkLabel" id="subtitle_label">
-                                    <property name="label">Create useful .gitignore files for your project
-                                    </property>
+                                  <object class="GtkSearchEntry" id="search_entry">
+                                    <property name="placeholder-text">Search templates</property>
+                                    <signal name="search-changed" handler="on_search_changed"/>
                                   </object>
                                 </child>
-                              </object>
-                            </child>
-                            <!-- Template search entry -->
-                            <child>
-                              <object class="GtkSearchEntry" id="search_entry">
-                                <property name="placeholder-text">Search templates</property>
-                                <signal name="search-changed" handler="on_search_changed"/>
                               </object>
                             </child>
                             <child>
                               <!-- Selected templates list -->
-                              <object class="TemplatePillBox" id="search_selected_box">
+                              <object class="TemplatePillBox" id="selected_pills_box">
                                 <property name="halign">center</property>
-                                <property name="min-children-per-line">3</property>
-                                <property name="max-children-per-line">3</property>
+                                <property name="min-children-per-line">2</property>
                               </object>
                             </child>
                           </object>

@@ -8,49 +8,84 @@ class TemplatePillBox(Gtk.FlowBox):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.pills: list[TemplatePill] = []
         self.set_selection_mode(Gtk.SelectionMode.NONE)
 
-    def append(self, pill: "TemplatePill") -> TemplateData:
-        pill.delete_button.connect("clicked", lambda _: self.remove(pill))
+    def append(self, pill: "TemplatePill"):
+        pill.parent_box = self
+        self.pills.append(pill)
         super().append(pill)
-        return pill.template
 
-    def remove(self, child: "TemplatePill") -> TemplateData:
-        super().remove(child)
-        return child.template
+    def remove(self, pill: "TemplatePill"):
+        pill.parent_box = None
+        self.pills.remove(pill)
+        super().remove(pill)
+        return pill.template
 
 
 class TemplatePill(Gtk.Box):
     __gtype_name__ = "TemplatePill"
 
-    def __init__(self, template: TemplateData, deletable: bool = False, **kwargs):
+    def __init__(
+        self,
+        template: TemplateData,
+        action_button: Gtk.Button | None = None,
+        parent_box: TemplatePillBox | None = None,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         self.template = template
+        self.action_button = action_button
+        self.parent_box = parent_box
 
-        self._text_start_offset: int = 5
-        self._text_end_offset: int = 14 if deletable else 5
-        final_text = (
-            (" " * self._text_start_offset)
-            + self.template.name
-            + (" " * self._text_end_offset)
-        )
+        self._overlay = Gtk.Overlay()
+        self.append(self._overlay)
 
-        overlay = Gtk.Overlay()
-        self.append(overlay)
-
-        label_button = Gtk.Button(label=final_text)
-        label_button.add_css_class("suggested-action")
-        label_button.add_css_class("circular")
+        label = self._transform_label(self.template.name)
+        self._label_button = Gtk.Button(label=label)
+        self._label_button.add_css_class("suggested-action")
+        self._label_button.add_css_class("circular")
         label_box = Gtk.Box(vexpand=False)
-        label_box.append(label_button)
-        overlay.set_child(label_box)
+        label_box.append(self._label_button)
+        self._overlay.set_child(label_box)
 
-        self.delete_button = Gtk.Button(icon_name="edit-delete-symbolic")
-        self.delete_button.add_css_class("circular")
-        delete_box = Gtk.Box(vexpand=False, hexpand=True, halign=Gtk.Align.END)
-        delete_box.append(self.delete_button)
-        if deletable:
-            overlay.add_overlay(delete_box)
+        if self.action_button:
+            self._init_action_button()
+
+    def set_label(self, text: str):
+        label = self._transform_label(text)
+        self._label_button.set_label(label)
+
+    def _init_action_button(self):
+        self.action_button.add_css_class("circular")
+
+        button_box = Gtk.Box(hexpand=True, halign=Gtk.Align.END)
+        button_box.append(self.action_button)
+        self._overlay.add_overlay(button_box)
+
+        label = self._transform_label(self.template.name, True)
+        self._label_button.set_label(label)
+
+    def _transform_label(self, text: str, has_action_button: bool = False) -> str:
+        start_space = 5
+        end_space = 14 if has_action_button else start_space
+        final_text = " " * start_space + text + " " * end_space
+        return final_text
+
+
+class AddablePill(TemplatePill):
+    __gtype_name__ = "AddablePill"
+
+    def __init__(self, template: TemplateData):
+        super().__init__(template, Gtk.Button(icon_name="list-add-symbolic"))
+
+
+class DeletablePill(TemplatePill):
+    __gtype_name__ = "DeletablePill"
+
+    def __init__(self, template: TemplateData):
+        super().__init__(template, Gtk.Button(icon_name="edit-delete-symbolic"))
+        self.action_button.connect("clicked", lambda _: self.parent_box.remove(self))
 
 
 class SearchSuggestionsBox(Gtk.ScrolledWindow):
@@ -62,6 +97,7 @@ class SearchSuggestionsBox(Gtk.ScrolledWindow):
         self.set_propagate_natural_height(True)
         self.set_valign(Gtk.Align.START)
         self.set_halign(Gtk.Align.CENTER)
+        self.set_margin_top(160)
         self.set_visible(False)
         self.add_css_class("card")
         self.add_css_class("view")

@@ -2,7 +2,13 @@ from gi.repository import Adw, GObject, Gdk, Gtk
 
 from ignorem import utils
 from ignorem.controller import AppController
-from ignorem.ui.widgets import SearchSuggestionsBox, TemplatePill
+from ignorem.ui.widgets import (
+    AddablePill,
+    DeletablePill,
+    SearchSuggestionsBox,
+    TemplatePill,
+    TemplatePillBox,
+)
 
 
 @Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/page-search")
@@ -15,8 +21,11 @@ class SearchPage(Adw.NavigationPage):
     overlay: Gtk.Overlay = Gtk.Template.Child()
     search_entry: Gtk.SearchEntry = Gtk.Template.Child()
     suggestions_box: SearchSuggestionsBox = Gtk.Template.Child()
+    selected_pills_box: TemplatePillBox = Gtk.Template.Child()
 
     loading_page: Adw.ViewStackPage = Gtk.Template.Child()
+
+    search_actionbar: Gtk.ActionBar = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -35,8 +44,21 @@ class SearchPage(Adw.NavigationPage):
         # Populate suggestions box
         pill_box = self.suggestions_box.templatepill_box
         for template in templates:
-            pill = TemplatePill(template)
+            pill = AddablePill(template)
+            pill.action_button.connect("clicked", self.on_suggestion_clicked, pill)
             pill_box.append(pill)
+
+    def on_suggestion_clicked(self, _, pill: AddablePill):
+        selected_pill = DeletablePill(pill.template)
+        selected_pill.action_button.connect("clicked", self.on_selected_deleted, pill)
+        self.selected_pills_box.append(selected_pill)
+
+        pill.set_sensitive(False)
+        self._update_actionbar_visibility()
+
+    def on_selected_deleted(self, _, pill: AddablePill):
+        pill.set_sensitive(True)
+        self._update_actionbar_visibility()
 
     @Gtk.Template.Callback()
     def on_refresh(self, button: Gtk.Button):
@@ -67,7 +89,7 @@ class SearchPage(Adw.NavigationPage):
         self.suggestions_box.templatepill_box.invalidate_sort()
         self.suggestions_box.templatepill_box.invalidate_filter()
 
-        # Only doing this for
+        # Determine if app should display pills or no results
         results = [
             template
             for template in self._controller.templates()
@@ -87,7 +109,9 @@ class SearchPage(Adw.NavigationPage):
     def on_suggestions_visible(self, _, __, allocation: Gdk.Rectangle):
         entry_allocation = self.search_entry.get_allocation()
         self.suggestions_box.set_size_request(entry_allocation.width, -1)
-        self.suggestions_box.set_margin_top(180)
+
+    def _update_actionbar_visibility(self):
+        self.search_actionbar.set_revealed(bool(self.selected_templates_box.pills))
 
     def _init(self):
         pill_box = self.suggestions_box.templatepill_box
