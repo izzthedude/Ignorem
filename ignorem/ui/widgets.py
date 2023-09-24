@@ -8,19 +8,27 @@ class TemplatePillBox(Gtk.FlowBox):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.pills: list[TemplatePill] = []
+        self._pills: list[TemplatePill] = []
         self.set_selection_mode(Gtk.SelectionMode.NONE)
 
+    @property
+    def pills(self) -> list["TemplatePill"]:
+        return self._pills
+
     def append(self, pill: "TemplatePill"):
+        super().append(pill)
         pill.parent_box = self
         self.pills.append(pill)
-        super().append(pill)
 
     def remove(self, pill: "TemplatePill"):
+        super().remove(pill)
         pill.parent_box = None
         self.pills.remove(pill)
-        super().remove(pill)
         return pill.template
+
+    def clear(self):
+        for pill in self.pills:
+            self.remove(pill)
 
 
 class TemplatePill(Gtk.Box):

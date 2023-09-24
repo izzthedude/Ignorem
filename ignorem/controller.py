@@ -10,7 +10,9 @@ class AppController:
 
     @classmethod
     def instance(cls):
-        return AppController._instance if AppController._instance else cls()
+        if not cls._instance:
+            cls._instance = AppController()
+        return AppController._instance
 
     def __init__(self):
         if AppController._instance:

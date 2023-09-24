@@ -100,7 +100,8 @@ class SearchPage(Adw.NavigationPage):
 
     @Gtk.Template.Callback()
     def on_create_clicked(self, button: Gtk.Button):
-        print("clear")
+        for pill in self.selected_pills_box.pills:
+            self._controller.add_selected_template(pill.template)
 
     @Gtk.Template.Callback()
     def on_debug_clicked(self, button: Gtk.Button):
@@ -111,7 +112,7 @@ class SearchPage(Adw.NavigationPage):
         self.suggestions_box.set_size_request(entry_allocation.width, -1)
 
     def _update_actionbar_visibility(self):
-        self.search_actionbar.set_revealed(bool(self.selected_templates_box.pills))
+        self.search_actionbar.set_revealed(bool(self.selected_pills_box.pills))
 
     def _init(self):
         pill_box = self.suggestions_box.templatepill_box

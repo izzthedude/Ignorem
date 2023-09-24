@@ -35,8 +35,6 @@
             <child>
               <object class="AdwViewStackPage" id="preview_page">
                 <property name="name">preview-page</property>
-                <property name="visible" bind-source="PreviewPage" bind-property="is-loading"
-                          bind-flags="default | sync-create | invert-boolean"/>
                 <property name="child">
                   <object class="GtkBox">
                     <property name="orientation">vertical</property>
@@ -52,7 +50,8 @@
                     <!-- Selected template pills -->
                     <child>
                       <object class="TemplatePillBox" id="preview_selected_box">
-                        <property name="halign">center</property>
+                        <property name="halign">start</property>
+                        <property name="min-children-per-line">2</property>
                       </object>
                     </child>
                     <!-- Text view -->
@@ -102,6 +101,7 @@
                 <property name="name">status-page</property>
                 <property name="child">
                   <object class="AdwStatusPage" id="preview_status_page">
+                    <property name="name">status-page</property>
                     <property name="icon-name">dialog-error-symbolic</property>
                     <property name="title">An error occurred</property>
                   </object>
@@ -112,5 +112,7 @@
         </property>
       </object>
     </property>
+    <signal name="showing" handler="on_preview_showing"/>
+    <signal name="hiding" handler="on_preview_hiding"/>
   </template>
 </interface>
