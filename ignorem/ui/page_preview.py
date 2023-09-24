@@ -85,8 +85,8 @@ class PreviewPage(Adw.NavigationPage):
 
     def reset_page(self):
         self._controller.reset()
-        self.preview_textview.get_buffer().props.text = ""
         self.preview_selected_box.clear()
+        self.preview_textview.get_buffer().props.text = ""
 
     @GObject.Property(type=bool, default=False, nick="is-loading")
     def is_loading(self) -> bool:

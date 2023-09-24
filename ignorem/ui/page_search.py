@@ -99,7 +99,7 @@ class SearchPage(Adw.NavigationPage):
 
     @Gtk.Template.Callback()
     def on_create_clicked(self, button: Gtk.Button):
-        for pill in self.selected_pillbox.pills:
+        for pill in self.selected_pillbox.pills():
             self._controller.add_selected_template(pill.template)
         self.search_entry.set_text("")
 
@@ -112,7 +112,7 @@ class SearchPage(Adw.NavigationPage):
         self.suggestions_box.set_size_request(entry_allocation.width, -1)
 
     def _update_actionbar_visibility(self):
-        self.search_actionbar.set_revealed(bool(self.suggestions_pillbox.pills))
+        self.search_actionbar.set_revealed(bool(self.suggestions_pillbox.pills()))
 
     def _init(self):
         # Have to bind here cause it wouldn't work in the ui file for some reason

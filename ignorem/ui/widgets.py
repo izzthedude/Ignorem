@@ -11,24 +11,23 @@ class TemplatePillBox(Gtk.FlowBox):
         self._pills: list[TemplatePill] = []
         self.set_selection_mode(Gtk.SelectionMode.NONE)
 
-    @property
     def pills(self) -> list["TemplatePill"]:
         return self._pills
 
     def append(self, pill: "TemplatePill"):
         super().append(pill)
         pill.parent_box = self
-        self.pills.append(pill)
+        self._pills.append(pill)
 
     def remove(self, pill: "TemplatePill"):
         super().remove(pill)
         pill.parent_box = None
-        self.pills.remove(pill)
+        self._pills.remove(pill)
         return pill.template
 
     def clear(self):
-        for pill in self.pills:
-            self.remove(pill)
+        while len(self._pills) > 0:
+            self.remove(self._pills[0])
 
 
 class TemplatePill(Gtk.Box):
