@@ -1,7 +1,7 @@
-from dataclasses import dataclass, asdict, astuple
 import json
-import requests
+from dataclasses import asdict, astuple, dataclass
 
+import requests
 
 API_URL = "https://www.toptal.com/developers/gitignore/api"
 

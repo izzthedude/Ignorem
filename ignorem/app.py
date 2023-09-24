@@ -19,30 +19,39 @@
 
 import sys
 
-from gi.repository import Gio, Gtk, Adw
+from gi.repository import Adw, GObject, Gio, Gtk
 
-from ignorem.ui.window import MainWindow
+from ignorem import utils
+from ignorem.controller import AppController
 from ignorem.enums import Ignorem
+from ignorem.ui import MainWindow, PreviewPage, SearchPage
+from ignorem.ui.widgets import (
+    AddablePill,
+    DeletablePill,
+    TemplatePill,
+    TemplatePillBox,
+)
 
 
 class IgnoremApp(Adw.Application):
     def __init__(self):
         super().__init__(
-            application_id=Ignorem.ID,
-            flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
+            application_id=Ignorem.ID, flags=Gio.ApplicationFlags.DEFAULT_FLAGS
         )
-        self.create_action("quit", lambda *_: self.quit(), ["<primary>q"])
-        self.create_action("about", self.on_about_action)
-        self.create_action("preferences", self.on_preferences_action)
+        utils.ui.create_action(self, "refresh", self.on_refresh_action)
+        utils.ui.create_action(self, "about", self.on_about_action)
+        utils.ui.create_action(self, "quit", lambda *_: self.quit(), ["<primary>q"])
         self.set_accels_for_action("win.show-help-overlay", ["<primary>question"])
 
     def do_activate(self):
-        win = self.props.active_window
-        if not win:
-            win = MainWindow(application=self)
-        win.present()
+        if not self.props.active_window:
+            self.main_window = MainWindow(application=self)
+        self.main_window.show()
 
-    def on_about_action(self, widget, _):
+    def on_refresh_action(self, action, _):
+        self.main_window.search_page.on_refresh()
+
+    def on_about_action(self, action, _):
         about = Adw.AboutWindow(
             transient_for=self.props.active_window,
             application_name=Ignorem.NAME,
@@ -60,15 +69,19 @@ class IgnoremApp(Adw.Application):
     def on_preferences_action(self, widget, _):
         print("app.preferences action activated")
 
-    def create_action(self, name, callback, shortcuts=None):
-        action = Gio.SimpleAction.new(name, None)
-        action.connect("activate", callback)
-        self.add_action(action)
-        if shortcuts:
-            self.set_accels_for_action(f"app.{name}", shortcuts)
+
+def _register_types():
+    GObject.type_register(MainWindow)
+    GObject.type_register(SearchPage)
+    GObject.type_register(PreviewPage)
+    GObject.type_register(TemplatePillBox)
+    GObject.type_register(TemplatePill)
+    GObject.type_register(AddablePill)
+    GObject.type_register(DeletablePill)
 
 
 def main(version):
-    """The application's entry point."""
+    _register_types()
+    AppController.instance()  # Initialise controller
     app = IgnoremApp()
     return app.run(sys.argv)
