@@ -17,8 +17,9 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Adw, Gtk
+from gi.repository import Adw, Gio, Gtk
 
+from ignorem.enums import Ignorem
 from ignorem.ui import SearchPage
 
 
@@ -31,6 +32,7 @@ class MainWindow(Adw.ApplicationWindow):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._setup_help_overlay()
+        self._bind_settings()
 
     def _setup_help_overlay(self):
         builder = Gtk.Builder.new_from_resource(
@@ -38,3 +40,24 @@ class MainWindow(Adw.ApplicationWindow):
         )
         shortcuts_window = builder.get_object("help_overlay")
         self.set_help_overlay(shortcuts_window)
+
+    def _bind_settings(self):
+        settings = Gio.Settings(schema_id=Ignorem.ID)
+        settings.bind(
+            "window-width",
+            self,
+            "default-width",
+            Gio.SettingsBindFlags.DEFAULT
+        )
+        settings.bind(
+            "window-height",
+            self,
+            "default-height",
+            Gio.SettingsBindFlags.DEFAULT
+        )
+        settings.bind(
+            "window-maximized",
+            self,
+            "maximized",
+            Gio.SettingsBindFlags.DEFAULT
+        )
