@@ -5,7 +5,6 @@ from ignorem.controller import AppController
 from ignorem.ui.widgets import (
     AddablePill,
     DeletablePill,
-    SearchSuggestionsBox,
     TemplatePill,
     TemplatePillBox,
 )
@@ -20,8 +19,10 @@ class SearchPage(Adw.NavigationPage):
     search_page: Adw.ViewStackPage = Gtk.Template.Child()
     overlay: Gtk.Overlay = Gtk.Template.Child()
     search_entry: Gtk.SearchEntry = Gtk.Template.Child()
-    suggestions_box: SearchSuggestionsBox = Gtk.Template.Child()
-    selected_pills_box: TemplatePillBox = Gtk.Template.Child()
+    suggestions_box: Gtk.ScrolledWindow = Gtk.Template.Child()
+    suggestions_pillbox: TemplatePillBox = Gtk.Template.Child()
+    selected_pillbox: TemplatePillBox = Gtk.Template.Child()
+    no_results_label: Gtk.Label = Gtk.Template.Child()
 
     loading_page: Adw.ViewStackPage = Gtk.Template.Child()
 
@@ -41,7 +42,7 @@ class SearchPage(Adw.NavigationPage):
         templates = self._controller.fetch_list(fetch)
 
         # Populate suggestions box
-        pill_box = self.suggestions_box.templatepill_box
+        pill_box = self.suggestions_pillbox
         for template in templates:
             pill = AddablePill(template)
             pill.action_button.connect("clicked", self.on_suggestion_clicked, pill)
@@ -50,7 +51,7 @@ class SearchPage(Adw.NavigationPage):
     def on_suggestion_clicked(self, _, pill: AddablePill):
         selected_pill = DeletablePill(pill.template)
         selected_pill.action_button.connect("clicked", self.on_selected_deleted, pill)
-        self.selected_pills_box.append(selected_pill)
+        self.selected_pillbox.append(selected_pill)
 
         pill.set_sensitive(False)
         self._update_actionbar_visibility()
@@ -84,8 +85,8 @@ class SearchPage(Adw.NavigationPage):
     def on_search_changed(self, entry: Gtk.SearchEntry):
         text = entry.get_text()
 
-        self.suggestions_box.templatepill_box.invalidate_sort()
-        self.suggestions_box.templatepill_box.invalidate_filter()
+        self.suggestions_pillbox.invalidate_sort()
+        self.suggestions_pillbox.invalidate_filter()
 
         # Determine if app should display pills or no results
         results = [
@@ -93,13 +94,14 @@ class SearchPage(Adw.NavigationPage):
             for template in self._controller.templates()
             if text.lower() in template.name.lower()
         ]
-        self.suggestions_box.set_results_found(bool(results))
+        self.no_results_label.set_visible(not bool(results))
         self.suggestions_box.set_visible(bool(text))
 
     @Gtk.Template.Callback()
     def on_create_clicked(self, button: Gtk.Button):
-        for pill in self.selected_pills_box.pills:
+        for pill in self.selected_pillbox.pills:
             self._controller.add_selected_template(pill.template)
+        self.search_entry.set_text("")
 
     @Gtk.Template.Callback()
     def on_debug_clicked(self, button: Gtk.Button):
@@ -110,7 +112,7 @@ class SearchPage(Adw.NavigationPage):
         self.suggestions_box.set_size_request(entry_allocation.width, -1)
 
     def _update_actionbar_visibility(self):
-        self.search_actionbar.set_revealed(bool(self.selected_pills_box.pills))
+        self.search_actionbar.set_revealed(bool(self.suggestions_pillbox.pills))
 
     def _init(self):
         # Have to bind here cause it wouldn't work in the ui file for some reason
@@ -124,9 +126,8 @@ class SearchPage(Adw.NavigationPage):
             else self.search_page.get_name(),
         )
 
-        pill_box = self.suggestions_box.templatepill_box
-        pill_box.set_filter_func(self._pillbox_filter_func)
-        pill_box.set_sort_func(self._pillbox_sort_func)
+        self.suggestions_pillbox.set_filter_func(self._pillbox_filter_func)
+        self.suggestions_pillbox.set_sort_func(self._pillbox_sort_func)
 
         # Escape/click outside the suggestion box to hide it
         key_controller = Gtk.EventControllerKey()

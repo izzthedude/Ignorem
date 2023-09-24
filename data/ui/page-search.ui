@@ -114,7 +114,7 @@
                             </child>
                             <child>
                               <!-- Selected templates list -->
-                              <object class="TemplatePillBox" id="selected_pills_box">
+                              <object class="TemplatePillBox" id="selected_pillbox">
                                 <property name="halign">center</property>
                                 <property name="min-children-per-line">2</property>
                               </object>
@@ -124,7 +124,50 @@
                       </object>
                     </child>
                     <child type="overlay">
-                      <object class="SearchSuggestionsBox" id="suggestions_box"/>
+                      <object class="GtkScrolledWindow" id="suggestions_box">
+                        <property name="propagate-natural-width">true</property>
+                        <property name="propagate-natural-height">true</property>
+                        <property name="valign">start</property>
+                        <property name="halign">center</property>
+                        <property name="margin-top">160</property>
+                        <property name="visible">false</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="orientation">vertical</property>
+                            <property name="valign">start</property>
+                            <property name="halign">start</property>
+                            <child>
+                              <object class="GtkBox" id="pillbox_box">
+                                <property name="orientation">vertical</property>
+                                <property name="margin-top">10</property>
+                                <property name="margin-bottom">10</property>
+                                <property name="margin-start">10</property>
+                                <property name="margin-end">10</property>
+                                <property name="spacing">20</property>
+                                <property name="valign">start</property>
+                                <property name="halign">start</property>
+                                <property name="visible" bind-source="no_results_label" bind-property="visible"
+                                          bind-flags="default | sync-create | bidirectional | invert-boolean"/>
+                                <child>
+                                  <object class="TemplatePillBox" id="suggestions_pillbox"/>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="no_results_label">
+                                <property name="label">No templates found</property>
+                                <property name="visible">false</property>
+                                <property name="margin-top">10</property>
+                                <property name="margin-start">10</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <style>
+                          <class name="card"/>
+                          <class name="view"/>
+                        </style>
+                      </object>
                     </child>
                   </object>
                 </property>

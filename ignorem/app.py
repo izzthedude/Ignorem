@@ -28,7 +28,6 @@ from ignorem.ui import MainWindow, PreviewPage, SearchPage
 from ignorem.ui.widgets import (
     AddablePill,
     DeletablePill,
-    SearchSuggestionsBox,
     TemplatePill,
     TemplatePillBox,
 )
@@ -79,7 +78,6 @@ def _register_types():
     GObject.type_register(TemplatePill)
     GObject.type_register(AddablePill)
     GObject.type_register(DeletablePill)
-    GObject.type_register(SearchSuggestionsBox)
 
 
 def main(version):
