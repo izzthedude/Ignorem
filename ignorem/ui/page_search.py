@@ -2,12 +2,7 @@ from gi.repository import Adw, GObject, Gdk, Gtk
 
 from ignorem import utils
 from ignorem.controller import AppController
-from ignorem.ui.widgets import (
-    AddablePill,
-    DeletablePill,
-    TemplatePill,
-    TemplatePillBox,
-)
+from ignorem.ui.widgets import AddablePill, DeletablePill, TemplatePill, TemplatePillBox
 
 
 @Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/page-search")
