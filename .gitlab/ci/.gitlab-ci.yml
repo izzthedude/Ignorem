@@ -1,3 +1,6 @@
+stages:
+  - lint
+
 default:
   image: python:3.11.5
 
@@ -15,7 +18,11 @@ before_script:
   - pip install pre-commit
 
 check-code:
+  stage: lint
   script:
-    - pre-commit run --all-files
+    - pre-commit run
   only:
+    - web
+    - main
+    - develop
     - merge_requests
