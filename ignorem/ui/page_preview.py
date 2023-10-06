@@ -108,3 +108,6 @@ class PreviewPage(Adw.NavigationPage):
             if self.is_loading
             else self.preview_page.get_name(),
         )
+
+
+GObject.type_register(PreviewPage)

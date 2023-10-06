@@ -1,4 +1,4 @@
-from gi.repository import Gtk
+from gi.repository import GObject, Gtk
 
 from ignorem.gitignore import TemplateData
 
@@ -93,3 +93,9 @@ class DeletablePill(TemplatePill):
     def __init__(self, template: TemplateData):
         super().__init__(template, Gtk.Button(icon_name="edit-delete-symbolic"))
         self.action_button.connect("clicked", lambda _: self.parent_box.remove(self))
+
+
+GObject.type_register(TemplatePillBox)
+GObject.type_register(TemplatePill)
+GObject.type_register(AddablePill)
+GObject.type_register(DeletablePill)

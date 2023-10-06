@@ -19,13 +19,12 @@
 
 import sys
 
-from gi.repository import Adw, GObject, Gio, Gtk
+from gi.repository import Adw, Gio, Gtk
 
 from ignorem import utils
 from ignorem.controller import AppController
 from ignorem.enums import Ignorem
-from ignorem.ui import MainWindow, PreviewPage, SearchPage
-from ignorem.ui.widgets import AddablePill, DeletablePill, TemplatePill, TemplatePillBox
+from ignorem.ui import MainWindow
 
 
 class IgnoremApp(Adw.Application):
@@ -65,18 +64,7 @@ class IgnoremApp(Adw.Application):
         print("app.preferences action activated")
 
 
-def _register_types():
-    GObject.type_register(MainWindow)
-    GObject.type_register(SearchPage)
-    GObject.type_register(PreviewPage)
-    GObject.type_register(TemplatePillBox)
-    GObject.type_register(TemplatePill)
-    GObject.type_register(AddablePill)
-    GObject.type_register(DeletablePill)
-
-
 def main(version):
-    _register_types()
     AppController.instance()  # Initialise controller
     app = IgnoremApp()
     return app.run(sys.argv)

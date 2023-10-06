@@ -160,3 +160,6 @@ class SearchPage(Adw.NavigationPage):
         allocation = self.suggestions_box.get_allocation()
         if not allocation.contains_point(int(x), int(y)):
             self.suggestions_box.set_visible(False)
+
+
+GObject.type_register(SearchPage)

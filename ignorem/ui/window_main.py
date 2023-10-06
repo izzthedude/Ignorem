@@ -17,7 +17,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Adw, Gio, Gtk
+from gi.repository import Adw, GObject, Gio, Gtk
 
 from ignorem.enums import Ignorem
 from ignorem.ui import SearchPage
@@ -52,3 +52,6 @@ class MainWindow(Adw.ApplicationWindow):
         settings.bind(
             "window-maximized", self, "maximized", Gio.SettingsBindFlags.DEFAULT
         )
+
+
+GObject.type_register(MainWindow)
