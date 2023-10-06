@@ -40,11 +40,15 @@ show_error_codes = true
 explicit_package_bases = true
 
 [[tool.mypy.overrides]]
-module = "ignorem.ui.*"
+module = [
+    "ignorem.ui.*",
+    "ignorem.utils.ui"
+]
 strict = false
 ignore_errors = true
 
 [[tool.mypy.overrides]]
-module = "ignorem.utils.ui"
-strict = false
-ignore_errors = true
+module = [
+    "requests"
+]
+ignore_missing_imports = true
