@@ -28,13 +28,17 @@ class PreviewPage(Adw.NavigationPage):
     @Gtk.Template.Callback()
     def on_preview_showing(self, _):
         if self._controller.selected_templates():
-            utils.ui.run_async(self, self.fetch_template, self.on_fetch_template_finished)
+            utils.ui.run_async(
+                self, self.fetch_template, self.on_fetch_template_finished
+            )
             utils.ui.run_async(self, self.populate_selected_pills)
             self.is_loading = True
 
         else:
             self.preview_status_page.set_title("No templates were selected.")
-            self.preview_stack.set_visible_child_name(self.preview_status_page.get_name())
+            self.preview_stack.set_visible_child_name(
+                self.preview_status_page.get_name()
+            )
 
     def fetch_template(self):
         result = self._controller.request_template()

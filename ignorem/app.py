@@ -30,7 +30,9 @@ from ignorem.ui.widgets import AddablePill, DeletablePill, TemplatePill, Templat
 
 class IgnoremApp(Adw.Application):
     def __init__(self):
-        super().__init__(application_id=Ignorem.ID, flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
+        super().__init__(
+            application_id=Ignorem.ID, flags=Gio.ApplicationFlags.DEFAULT_FLAGS
+        )
         utils.ui.create_action(self, "refresh", self.on_refresh_action)
         utils.ui.create_action(self, "about", self.on_about_action)
         utils.ui.create_action(self, "quit", lambda *_: self.quit(), ["<primary>q"])
