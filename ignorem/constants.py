@@ -5,9 +5,11 @@ from ignorem import settings
 
 
 class Paths:
-    CACHE_DIR: str = str(
-        Path(os.environ.get("XDG_CACHE_HOME"), settings.APP_ID).absolute()
+    CACHE_DIR: Path = (
+        Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / settings.APP_ID
     )
-    CACHE_FILE: str = str(Path(CACHE_DIR, "templates_cache.json"))
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
-    Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
+
+class Data:
+    CACHE_FILE: Path = Path(Paths.CACHE_DIR, "gitignoreio.json")
