@@ -21,16 +21,15 @@ import sys
 
 from gi.repository import Adw, Gio, Gtk
 
-from ignorem import utils
+from ignorem import settings, utils
 from ignorem.controller import AppController
-from ignorem.enums import Ignorem
 from ignorem.ui import MainWindow
 
 
 class IgnoremApp(Adw.Application):
     def __init__(self):
         super().__init__(
-            application_id=Ignorem.ID, flags=Gio.ApplicationFlags.DEFAULT_FLAGS
+            application_id=settings.APP_ID, flags=Gio.ApplicationFlags.DEFAULT_FLAGS
         )
         utils.ui.create_action(self, "refresh", self.on_refresh_action)
         utils.ui.create_action(self, "about", self.on_about_action)
@@ -48,15 +47,15 @@ class IgnoremApp(Adw.Application):
     def on_about_action(self, action, _):
         about = Adw.AboutWindow(
             transient_for=self.props.active_window,
-            application_name=Ignorem.NAME,
-            application_icon=Ignorem.ID,
-            version=Ignorem.VERSION,
-            developer_name=Ignorem.AUTHOR,
-            developers=[Ignorem.AUTHOR],
+            application_name=settings.APP_NAME,
+            application_icon=settings.APP_ID,
+            version=settings.APP_VERSION,
+            developer_name=settings.APP_AUTHOR,
+            developers=[settings.APP_AUTHOR],
             copyright="© 2023 Izzat Z.",
             license_type=Gtk.License.GPL_3_0,
-            website=Ignorem.WEBSITE,
-            issue_url=Ignorem.ISSUE_URL,
+            website=settings.APP_WEBSITE,
+            issue_url=settings.APP_ISSUE_URL,
         )
         about.present()
 

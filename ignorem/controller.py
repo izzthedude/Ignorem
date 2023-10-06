@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from ignorem import gitignore, utils
-from ignorem.enums import Paths
+from ignorem.constants import Paths
 from ignorem.gitignore import TemplateData
 
 

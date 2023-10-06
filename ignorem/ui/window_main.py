@@ -19,7 +19,7 @@
 
 from gi.repository import Adw, GObject, Gio, Gtk
 
-from ignorem.enums import Ignorem
+from ignorem import settings
 from ignorem.ui import SearchPage
 
 
@@ -42,14 +42,14 @@ class MainWindow(Adw.ApplicationWindow):
         self.set_help_overlay(shortcuts_window)
 
     def _bind_settings(self):
-        settings = Gio.Settings(schema_id=Ignorem.ID)
-        settings.bind(
+        settings_ = Gio.Settings(schema_id=settings.APP_ID)
+        settings_.bind(
             "window-width", self, "default-width", Gio.SettingsBindFlags.DEFAULT
         )
-        settings.bind(
+        settings_.bind(
             "window-height", self, "default-height", Gio.SettingsBindFlags.DEFAULT
         )
-        settings.bind(
+        settings_.bind(
             "window-maximized", self, "maximized", Gio.SettingsBindFlags.DEFAULT
         )
 
