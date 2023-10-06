@@ -1,8 +1,9 @@
 from pathlib import Path
 
-from ignorem import gitignore, utils
+from ignorem import gitignore
 from ignorem.constants import Paths
 from ignorem.gitignore import TemplateData
+from ignorem.utils import files
 
 
 class AppController:
@@ -27,13 +28,13 @@ class AppController:
     def fetch_list(self, force_fetch: bool = False) -> list[TemplateData]:
         cache_file = Path(Paths.CACHE_FILE).absolute()
         if not cache_file.exists() or force_fetch:
-            utils.write_json(
+            files.write_json(
                 [template.as_dict() for template in gitignore.list_json()],
                 Paths.CACHE_FILE,
             )
 
         self._templates = [
-            TemplateData(**template) for template in utils.read_json(Paths.CACHE_FILE)
+            TemplateData(**template) for template in files.read_json(Paths.CACHE_FILE)
         ]
         return self._templates
 
