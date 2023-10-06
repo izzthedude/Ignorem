@@ -20,6 +20,7 @@
 from gi.repository import Adw, GObject, Gio, Gtk
 
 from ignorem import settings
+from ignorem.ui.page_preview import PreviewPage
 from ignorem.ui.page_search import SearchPage
 
 
@@ -28,6 +29,7 @@ class MainWindow(Adw.ApplicationWindow):
     __gtype_name__ = "MainWindow"
 
     search_page: SearchPage = Gtk.Template.Child()
+    preview_page: PreviewPage = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

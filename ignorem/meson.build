@@ -20,9 +20,10 @@ ignorem_sources = [
   '__init__.py',
   'constants.py',
   'controller.py',
-  'gitignore.py',
   # settings.py no need, it's handled above.
 ]
-install_subdir('utils', install_dir: moduledir)
+install_subdir('base', install_dir: moduledir)
+install_subdir('gitignoreio', install_dir: moduledir)
 install_subdir('ui', install_dir: moduledir)
+install_subdir('utils', install_dir: moduledir)
 install_data(ignorem_sources, install_dir: moduledir)

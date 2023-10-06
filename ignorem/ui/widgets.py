@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from gi.repository import GObject, Gtk
 
-from ignorem.gitignore import TemplateData
+from ignorem.gitignoreio.models import TemplateModel
 
 
 class TemplatePillBox(Gtk.FlowBox):
@@ -11,15 +13,15 @@ class TemplatePillBox(Gtk.FlowBox):
         self._pills: list[TemplatePill] = []
         self.set_selection_mode(Gtk.SelectionMode.NONE)
 
-    def pills(self) -> list["TemplatePill"]:
+    def pills(self) -> list[TemplatePill]:
         return self._pills
 
-    def append(self, pill: "TemplatePill"):
+    def append(self, pill: TemplatePill):
         super().append(pill)
         pill.parent_box = self
         self._pills.append(pill)
 
-    def remove(self, pill: "TemplatePill"):
+    def remove(self, pill: TemplatePill):
         super().remove(pill)
         pill.parent_box = None
         self._pills.remove(pill)
@@ -35,10 +37,10 @@ class TemplatePill(Gtk.Box):
 
     def __init__(
         self,
-        template: TemplateData,
+        template: TemplateModel,
         action_button: Gtk.Button | None = None,
         parent_box: TemplatePillBox | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.template = template
@@ -83,14 +85,14 @@ class TemplatePill(Gtk.Box):
 class AddablePill(TemplatePill):
     __gtype_name__ = "AddablePill"
 
-    def __init__(self, template: TemplateData):
+    def __init__(self, template: TemplateModel):
         super().__init__(template, Gtk.Button(icon_name="list-add-symbolic"))
 
 
 class DeletablePill(TemplatePill):
     __gtype_name__ = "DeletablePill"
 
-    def __init__(self, template: TemplateData):
+    def __init__(self, template: TemplateModel):
         super().__init__(template, Gtk.Button(icon_name="edit-delete-symbolic"))
         self.action_button.connect("clicked", lambda _: self.parent_box.remove(self))
 

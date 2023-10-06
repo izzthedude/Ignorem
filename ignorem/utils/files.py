@@ -1,6 +1,6 @@
 import json
 
-from base.types import JSONLike, PathLike
+from ignorem.base.types import JSONLike, PathLike
 
 
 def write_json(obj: JSONLike, path: PathLike) -> None:
@@ -10,4 +10,4 @@ def write_json(obj: JSONLike, path: PathLike) -> None:
 
 def read_json(path: PathLike) -> JSONLike:
     with open(path, "r") as file:
-        return json.load(file)
+        return json.load(file)  # type: ignore

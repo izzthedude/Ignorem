@@ -2,10 +2,10 @@ import json
 from typing import Literal, overload
 
 import requests
-from gitignoreio.types import TTemplate
 
 from ignorem.base.apis import BaseAPI
 from ignorem.gitignoreio.models import TemplateModel
+from ignorem.gitignoreio.types import TTemplate
 from ignorem.gitignoreio.urls import GITIGNORE_API
 
 
