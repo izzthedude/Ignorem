@@ -21,9 +21,10 @@ import sys
 
 from gi.repository import Adw, Gio, Gtk
 
-from ignorem import settings, utils
+from ignorem import settings
 from ignorem.controller import AppController
-from ignorem.ui import MainWindow
+from ignorem.ui.window_main import MainWindow
+from ignorem.utils import ui
 
 
 class IgnoremApp(Adw.Application):
@@ -31,9 +32,9 @@ class IgnoremApp(Adw.Application):
         super().__init__(
             application_id=settings.APP_ID, flags=Gio.ApplicationFlags.DEFAULT_FLAGS
         )
-        utils.ui.create_action(self, "refresh", self.on_refresh_action)
-        utils.ui.create_action(self, "about", self.on_about_action)
-        utils.ui.create_action(self, "quit", lambda *_: self.quit(), ["<primary>q"])
+        ui.create_action(self, "refresh", self.on_refresh_action)
+        ui.create_action(self, "about", self.on_about_action)
+        ui.create_action(self, "quit", lambda *_: self.quit(), ["<primary>q"])
         self.set_accels_for_action("win.show-help-overlay", ["<primary>question"])
 
     def do_activate(self):

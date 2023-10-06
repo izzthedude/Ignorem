@@ -2,9 +2,9 @@ from pathlib import Path
 
 from gi.repository import Adw, GObject, Gdk, Gtk
 
-from ignorem import utils
 from ignorem.controller import AppController
 from ignorem.ui.widgets import TemplatePill, TemplatePillBox
+from ignorem.utils import ui
 
 
 @Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/page-preview")
@@ -28,10 +28,8 @@ class PreviewPage(Adw.NavigationPage):
     @Gtk.Template.Callback()
     def on_preview_showing(self, _):
         if self._controller.selected_templates():
-            utils.ui.run_async(
-                self, self.fetch_template, self.on_fetch_template_finished
-            )
-            utils.ui.run_async(self, self.populate_selected_pills)
+            ui.run_async(self, self.fetch_template, self.on_fetch_template_finished)
+            ui.run_async(self, self.populate_selected_pills)
             self.is_loading = True
 
         else:
@@ -74,7 +72,7 @@ class PreviewPage(Adw.NavigationPage):
     def on_save_response(self, dialog: Gtk.FileChooserNative, response: int):
         if response == Gtk.ResponseType.ACCEPT:
             file = dialog.get_file()
-            utils.ui.run_async(self, self.save_template, func_args=(file.get_path(),))
+            ui.run_async(self, self.save_template, func_args=(file.get_path(),))
 
     def save_template(self, path: str):
         path = Path(path)
@@ -83,7 +81,7 @@ class PreviewPage(Adw.NavigationPage):
 
     @Gtk.Template.Callback()
     def on_preview_hiding(self, _):
-        utils.ui.run_async(self, self.reset_page)
+        ui.run_async(self, self.reset_page)
 
     def reset_page(self):
         self._controller.reset()

@@ -20,7 +20,7 @@
 from gi.repository import Adw, GObject, Gio, Gtk
 
 from ignorem import settings
-from ignorem.ui import SearchPage
+from ignorem.ui.page_search import SearchPage
 
 
 @Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/window-main")

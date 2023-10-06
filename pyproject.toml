@@ -35,10 +35,9 @@ case_sensitive = true
 known_first_party = ["ignorem"]
 
 [tool.mypy]
-files = "ignorem"
-mypy_path = "ignorem"
 strict = true
 show_error_codes = true
+explicit_package_bases = true
 
 [[tool.mypy.overrides]]
 module = "ignorem.ui.*"

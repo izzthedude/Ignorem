@@ -1,8 +1,8 @@
 from gi.repository import Adw, GObject, Gdk, Gtk
 
-from ignorem import utils
 from ignorem.controller import AppController
 from ignorem.ui.widgets import AddablePill, DeletablePill, TemplatePill, TemplatePillBox
+from ignorem.utils import ui
 
 
 @Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/page-search")
@@ -30,7 +30,7 @@ class SearchPage(Adw.NavigationPage):
         self._init()
 
         # Fetch list on page init
-        utils.ui.run_async(self, self.populate_templates, self.on_refresh_finished)
+        ui.run_async(self, self.populate_templates, self.on_refresh_finished)
         self.is_loading = True
 
     def populate_templates(self, fetch: bool = False):
@@ -57,7 +57,7 @@ class SearchPage(Adw.NavigationPage):
 
     def on_refresh(self):
         if not self.is_loading:
-            utils.ui.run_async(
+            ui.run_async(
                 self,
                 self.populate_templates,
                 self.on_refresh_finished,
