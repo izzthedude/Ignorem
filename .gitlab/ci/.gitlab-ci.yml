@@ -23,17 +23,20 @@ get-changed-files:
   only:
     - merge_requests
   before_script:
-    - CURRENT=$CI_COMMIT_SHA
-    - PREVIOUS=$CI_COMMIT_BEFORE_SHA
-    - TARGET_BRANCH=$(git rev-parse $CI_MERGE_REQUEST_TARGET_BRANCH_NAME)
-    - echo "Current $CI_COMMIT_SHA"
-    - echo "Previous $CI_COMMIT_BEFORE_SHA"
+    - git fetch
+    - CURRENT_BRANCH=$(git rev-parse HEAD)
+    - PREVIOUS_BRANCH=$(git rev-parse HEAD~1)
+    - TARGET_BRANCH=$(git rev-parse "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME")
+    - echo "Current $CURRENT_BRANCH"
+    - echo "Previous $PREVIOUS_BRANCH"
     - echo "Target $TARGET_BRANCH"
   script:
-    - CHANGED_PREVIOUS=$(git diff --name-only $CURRENT $PREVIOUS)
-    - CHANGED_TARGET=$(git diff --name-only $CURRENT $TARGET_BRANCH)
-    - CHANGED_FILES='$CHANGED_PREVIOUS $CHANGED_TARGET'
-  after_script:
+    - CHANGED_PREVIOUS=$(git diff --name-only $CURRENT_BRANCH $PREVIOUS_BRANCH | sed 's/.*/& /;$!s/$//' | tr -d '\n')
+    - CHANGED_TARGET=$(git diff --name-only $CURRENT_BRANCH $TARGET_BRANCH | sed 's/.*/& /;$!s/$//' | tr -d '\n')
+    - CHANGED_FILES="$CHANGED_PREVIOUS $CHANGED_TARGET"
+    - echo "Changed from last commit = $CHANGED_TARGET"
+    - echo "Changed from last commit = $CHANGED_PREVIOUS"
+    - echo "All changed files = $CHANGED_FILES"
     - echo "CHANGED_FILES='$CHANGED_FILES'" >> changed_files.env
     - cat changed_files.env
   artifacts:
@@ -46,9 +49,10 @@ check-progress:
     - get-changed-files
   script:
     - |
+      echo "Changed files = $CHANGED_FILES"
       pre-commit run --files $CHANGED_FILES
   only:
-    - merge-requests
+    - merge_requests
 
 check-all:
   stage: lint
