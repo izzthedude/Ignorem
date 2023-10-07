@@ -4,7 +4,7 @@ from gi.repository import Adw, GObject, Gdk, Gtk
 
 from ignorem.controller import AppController
 from ignorem.ui.widgets import TemplatePill, TemplatePillBox
-from ignorem.utils import ui
+from ignorem.utils import worker
 
 
 @Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/page-preview")
@@ -28,8 +28,8 @@ class PreviewPage(Adw.NavigationPage):
     @Gtk.Template.Callback()
     def on_preview_showing(self, _):
         if self._controller.selected_templates():
-            ui.run_async(self, self.fetch_template, self.on_fetch_template_finished)
-            ui.run_async(self, self.populate_selected_pills)
+            self.fetch_template()
+            self.populate_selected_pills()
             self.is_loading = True
 
         else:
@@ -38,14 +38,17 @@ class PreviewPage(Adw.NavigationPage):
                 self.preview_status_page.get_name()
             )
 
+    @worker.run("on_fetch_template_finished")
     def fetch_template(self):
         result = self._controller.request_template()
         buffer = Gtk.TextBuffer(text=result)
         self.preview_textview.set_buffer(buffer)
 
-    def on_fetch_template_finished(self):
+    def on_fetch_template_finished(self, result: None):
+        print(result)
         self.is_loading = False
 
+    @worker.run
     def populate_selected_pills(self):
         templates = self._controller.selected_templates()
         for template in templates:
@@ -72,8 +75,9 @@ class PreviewPage(Adw.NavigationPage):
     def on_save_response(self, dialog: Gtk.FileChooserNative, response: int):
         if response == Gtk.ResponseType.ACCEPT:
             file = dialog.get_file()
-            ui.run_async(self, self.save_template, func_args=(file.get_path(),))
+            self.save_template(file)
 
+    @worker.run
     def save_template(self, path: str):
         path = Path(path)
         text = self.preview_textview.get_buffer().props.text
@@ -81,8 +85,9 @@ class PreviewPage(Adw.NavigationPage):
 
     @Gtk.Template.Callback()
     def on_preview_hiding(self, _):
-        ui.run_async(self, self.reset_page)
+        self.reset_page()
 
+    @worker.run
     def reset_page(self):
         self._controller.reset()
         self.preview_selected_box.clear()

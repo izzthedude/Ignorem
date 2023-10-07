@@ -12,7 +12,7 @@ from ignorem.gitignoreio.urls import GITIGNORE_API
 class GitIgnoreListAPI(BaseAPI):
     @staticmethod
     def url() -> str:
-        return f"{GITIGNORE_API}"
+        return f"{GITIGNORE_API}/list"
 
     @staticmethod
     @overload
@@ -26,7 +26,7 @@ class GitIgnoreListAPI(BaseAPI):
 
     @staticmethod
     def get(format_: Literal["lines", "json"]) -> list[str] | list[TemplateModel]:
-        response = requests.get(GitIgnoreListAPI.url())
+        response = requests.get(GitIgnoreListAPI.url(), params={"format": format_})
         response.raise_for_status()
 
         if format_ == "lines":
@@ -40,8 +40,7 @@ class GitIgnoreListAPI(BaseAPI):
             ]
             return json_data
 
-        else:
-            raise ValueError("This method only accepts 'lines' or 'json'")
+        raise ValueError("This method only accepts 'lines' or 'json'")
 
 
 class GitIgnoreAPI(BaseAPI):

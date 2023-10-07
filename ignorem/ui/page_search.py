@@ -2,7 +2,7 @@ from gi.repository import Adw, GObject, Gdk, Gtk
 
 from ignorem.controller import AppController
 from ignorem.ui.widgets import AddablePill, DeletablePill, TemplatePill, TemplatePillBox
-from ignorem.utils import ui
+from ignorem.utils import worker
 
 
 @Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/page-search")
@@ -30,18 +30,19 @@ class SearchPage(Adw.NavigationPage):
         self._init()
 
         # Fetch list on page init
-        ui.run_async(self, self.populate_templates, self.on_refresh_finished)
+        self.populate_templates()
         self.is_loading = True
 
+    @worker.run("on_refresh_finished")
     def populate_templates(self, fetch: bool = False):
         templates = self._controller.fetch_list(fetch)
 
         # Populate suggestions box
-        pill_box = self.suggestions_pillbox
+        self.suggestions_pillbox.clear()
         for template in templates:
             pill = AddablePill(template)
             pill.action_button.connect("clicked", self.on_suggestion_clicked, pill)
-            pill_box.append(pill)
+            self.suggestions_pillbox.append(pill)
 
     def on_suggestion_clicked(self, _, pill: AddablePill):
         selected_pill = DeletablePill(pill.template)
@@ -57,15 +58,11 @@ class SearchPage(Adw.NavigationPage):
 
     def on_refresh(self):
         if not self.is_loading:
-            ui.run_async(
-                self,
-                self.populate_templates,
-                self.on_refresh_finished,
-                func_args=(True,),
-            )
+            self.populate_templates(True)
             self.is_loading = True
 
-    def on_refresh_finished(self):
+    def on_refresh_finished(self, result: None):
+        print(result)
         self.is_loading = False
 
     @GObject.Property(type=bool, default=False, nick="is-loading")
