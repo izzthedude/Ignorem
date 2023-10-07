@@ -1,5 +1,5 @@
 from dataclasses import asdict, dataclass, fields
-from typing import Any, Mapping, Self, Sequence
+from typing import Self, Sequence
 
 from ignorem.gitignoreio.types import TTemplate
 
@@ -19,5 +19,5 @@ class TemplateModel:
     def from_dict(cls, data: TTemplate) -> Self:
         return cls(**data)
 
-    def to_dict(self) -> TTemplate | Mapping[str, Any]:
-        return asdict(self)
+    def to_dict(self) -> TTemplate:
+        return asdict(self)  # type: ignore

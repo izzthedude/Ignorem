@@ -4,6 +4,7 @@ from ignorem.base.types import Singleton
 from ignorem.constants import Data
 from ignorem.gitignoreio.apis import GitIgnoreAPI, GitIgnoreListAPI
 from ignorem.gitignoreio.models import TemplateModel
+from ignorem.gitignoreio.types import TTemplate
 from ignorem.utils import files
 
 
@@ -20,9 +21,8 @@ class AppController(Singleton):
                 Data.CACHE_FILE,
             )
 
-        self._templates = [
-            TemplateModel(**template) for template in files.read_json(Data.CACHE_FILE)
-        ]
+        templates: list[TTemplate] = files.read_json(Data.CACHE_FILE)  # type: ignore
+        self._templates = [TemplateModel(**template) for template in templates]
         return self._templates
 
     def templates(self) -> list[TemplateModel]:

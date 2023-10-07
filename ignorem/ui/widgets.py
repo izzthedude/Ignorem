@@ -1,14 +1,16 @@
 from __future__ import annotations
 
+from typing import Any, Optional
+
 from gi.repository import GObject, Gtk
 
 from ignorem.gitignoreio.models import TemplateModel
 
 
 class TemplatePillBox(Gtk.FlowBox):
-    __gtype_name__ = "TemplatePillBox"
+    __gtype_name__: str = "TemplatePillBox"
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._pills: list[TemplatePill] = []
         self.set_selection_mode(Gtk.SelectionMode.NONE)
@@ -16,36 +18,35 @@ class TemplatePillBox(Gtk.FlowBox):
     def pills(self) -> list[TemplatePill]:
         return self._pills
 
-    def append(self, pill: TemplatePill):
+    def append(self, pill: TemplatePill) -> None:
         super().append(pill)
         pill.parent_box = self
         self._pills.append(pill)
 
-    def remove(self, pill: TemplatePill):
+    def remove(self, pill: TemplatePill) -> None:
         super().remove(pill)
         pill.parent_box = None
         self._pills.remove(pill)
-        return pill.template
 
-    def clear(self):
+    def clear(self) -> None:
         while len(self._pills) > 0:
             self.remove(self._pills[0])
 
 
 class TemplatePill(Gtk.Box):
-    __gtype_name__ = "TemplatePill"
+    __gtype_name__: str = "TemplatePill"
 
     def __init__(
         self,
         template: TemplateModel,
-        action_button: Gtk.Button | None = None,
-        parent_box: TemplatePillBox | None = None,
-        **kwargs,
-    ):
+        parent_box: Optional[TemplatePillBox] = None,
+        action_button: Optional[Gtk.Button] = None,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(**kwargs)
         self.template = template
-        self.action_button = action_button
         self.parent_box = parent_box
+        self.action_button = action_button
 
         self._overlay = Gtk.Overlay()
         self.append(self._overlay)
@@ -59,20 +60,17 @@ class TemplatePill(Gtk.Box):
         self._overlay.set_child(label_box)
 
         if self.action_button:
-            self._init_action_button()
+            self.action_button.add_css_class("circular")
 
-    def set_label(self, text: str):
+            button_box = Gtk.Box(hexpand=True, halign=Gtk.Align.END)
+            button_box.append(self.action_button)
+            self._overlay.add_overlay(button_box)
+
+            label = self._transform_label(self.template.name, True)
+            self._label_button.set_label(label)
+
+    def set_label(self, text: str) -> None:
         label = self._transform_label(text)
-        self._label_button.set_label(label)
-
-    def _init_action_button(self):
-        self.action_button.add_css_class("circular")
-
-        button_box = Gtk.Box(hexpand=True, halign=Gtk.Align.END)
-        button_box.append(self.action_button)
-        self._overlay.add_overlay(button_box)
-
-        label = self._transform_label(self.template.name, True)
         self._label_button.set_label(label)
 
     def _transform_label(self, text: str, has_action_button: bool = False) -> str:
@@ -83,18 +81,23 @@ class TemplatePill(Gtk.Box):
 
 
 class AddablePill(TemplatePill):
-    __gtype_name__ = "AddablePill"
+    __gtype_name__: str = "AddablePill"
 
-    def __init__(self, template: TemplateModel):
-        super().__init__(template, Gtk.Button(icon_name="list-add-symbolic"))
+    def __init__(self, template: TemplateModel) -> None:
+        super().__init__(
+            template, action_button=Gtk.Button(icon_name="list-add-symbolic")
+        )
+        self.action_button: Gtk.Button
 
 
 class DeletablePill(TemplatePill):
-    __gtype_name__ = "DeletablePill"
+    __gtype_name__: str = "DeletablePill"
 
-    def __init__(self, template: TemplateModel):
-        super().__init__(template, Gtk.Button(icon_name="edit-delete-symbolic"))
-        self.action_button.connect("clicked", lambda _: self.parent_box.remove(self))
+    def __init__(self, template: TemplateModel) -> None:
+        super().__init__(
+            template, action_button=Gtk.Button(icon_name="edit-delete-symbolic")
+        )
+        self.action_button: Gtk.Button
 
 
 GObject.type_register(TemplatePillBox)

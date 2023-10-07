@@ -1,3 +1,5 @@
+from typing import Any
+
 from gi.repository import Adw, GObject, Gdk, Gtk
 
 from ignorem.controller import AppController
@@ -7,7 +9,7 @@ from ignorem.utils import worker
 
 @Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/page-search")
 class SearchPage(Adw.NavigationPage):
-    __gtype_name__ = "SearchPage"
+    __gtype_name__: str = "SearchPage"
 
     search_stack: Adw.ViewStack = Gtk.Template.Child()
 
@@ -23,7 +25,7 @@ class SearchPage(Adw.NavigationPage):
 
     search_actionbar: Gtk.ActionBar = Gtk.Template.Child()
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._controller = AppController.instance()
         self._is_loading: bool = False
@@ -34,7 +36,7 @@ class SearchPage(Adw.NavigationPage):
         self.is_loading = True
 
     @worker.run("on_refresh_finished")
-    def populate_templates(self, fetch: bool = False):
+    def populate_templates(self, fetch: bool = False) -> None:
         templates = self._controller.fetch_list(fetch)
 
         # Populate suggestions box
@@ -44,7 +46,7 @@ class SearchPage(Adw.NavigationPage):
             pill.action_button.connect("clicked", self.on_suggestion_clicked, pill)
             self.suggestions_pillbox.append(pill)
 
-    def on_suggestion_clicked(self, _, pill: AddablePill):
+    def on_suggestion_clicked(self, _: Gtk.Button, pill: AddablePill) -> None:
         selected_pill = DeletablePill(pill.template)
         selected_pill.action_button.connect("clicked", self.on_selected_deleted, pill)
         self.selected_pillbox.append(selected_pill)
@@ -52,17 +54,16 @@ class SearchPage(Adw.NavigationPage):
         pill.set_sensitive(False)
         self._update_actionbar_visibility()
 
-    def on_selected_deleted(self, _, pill: AddablePill):
+    def on_selected_deleted(self, _: Gtk.Button, pill: AddablePill) -> None:
         pill.set_sensitive(True)
         self._update_actionbar_visibility()
 
-    def on_refresh(self):
+    def on_refresh(self) -> None:
         if not self.is_loading:
             self.populate_templates(True)
             self.is_loading = True
 
-    def on_refresh_finished(self, result: None):
-        print(result)
+    def on_refresh_finished(self, result: None) -> None:
         self.is_loading = False
 
     @GObject.Property(type=bool, default=False, nick="is-loading")
@@ -70,11 +71,11 @@ class SearchPage(Adw.NavigationPage):
         return self._is_loading
 
     @is_loading.setter
-    def is_loading(self, value: bool):
+    def is_loading(self, value: bool) -> None:
         self._is_loading = value
 
     @Gtk.Template.Callback()
-    def on_search_changed(self, entry: Gtk.SearchEntry):
+    def on_search_changed(self, entry: Gtk.SearchEntry) -> None:
         text = entry.get_text()
 
         self.suggestions_pillbox.invalidate_sort()
@@ -90,23 +91,25 @@ class SearchPage(Adw.NavigationPage):
         self.suggestions_box.set_visible(bool(text))
 
     @Gtk.Template.Callback()
-    def on_create_clicked(self, button: Gtk.Button):
+    def on_create_clicked(self, button: Gtk.Button) -> None:
         for pill in self.selected_pillbox.pills():
             self._controller.add_selected_template(pill.template)
         self.search_entry.set_text("")
 
     @Gtk.Template.Callback()
-    def on_debug_clicked(self, button: Gtk.Button):
+    def on_debug_clicked(self, button: Gtk.Button) -> None:
         print("debug")
 
-    def on_suggestions_visible(self, _, __, allocation: Gdk.Rectangle):
+    def on_suggestions_visible(
+        self, _: Any, __: Any, allocation: Gdk.Rectangle
+    ) -> None:
         entry_allocation = self.search_entry.get_allocation()
         self.suggestions_box.set_size_request(entry_allocation.width, -1)
 
-    def _update_actionbar_visibility(self):
+    def _update_actionbar_visibility(self) -> None:
         self.search_actionbar.set_revealed(bool(self.selected_pillbox.pills()))
 
-    def _init(self):
+    def _init(self) -> None:
         # Have to bind here cause it wouldn't work in the ui file for some reason
         self.bind_property(
             "is-loading",
@@ -133,12 +136,14 @@ class SearchPage(Adw.NavigationPage):
 
         self.overlay.connect("get-child-position", self.on_suggestions_visible)
 
-    def _pillbox_filter_func(self, child: Gtk.FlowBoxChild):
+    def _pillbox_filter_func(self, child: Gtk.FlowBoxChild) -> bool:
         pill: TemplatePill = child.get_child()
         text = self.search_entry.get_text()
         return text.lower() in pill.template.name.lower()
 
-    def _pillbox_sort_func(self, child1: Gtk.FlowBoxChild, child2: Gtk.FlowBoxChild):
+    def _pillbox_sort_func(
+        self, child1: Gtk.FlowBoxChild, child2: Gtk.FlowBoxChild
+    ) -> bool:
         pill1: TemplatePill = child1.get_child()
         pill2: TemplatePill = child2.get_child()
         return pill1.template.name.lower() > pill2.template.name.lower()
@@ -149,11 +154,13 @@ class SearchPage(Adw.NavigationPage):
         key_value: int,
         key_code: int,
         state: Gdk.ModifierType,
-    ):
+    ) -> None:
         if key_value == 65307:  # Escape
             self.suggestions_box.set_visible(False)
 
-    def _on_mouse_clicked(self, gesture: Gtk.Gesture, n_press: int, x: float, y: float):
+    def _on_mouse_clicked(
+        self, gesture: Gtk.Gesture, n_press: int, x: float, y: float
+    ) -> None:
         allocation = self.suggestions_box.get_allocation()
         if not allocation.contains_point(int(x), int(y)):
             self.suggestions_box.set_visible(False)

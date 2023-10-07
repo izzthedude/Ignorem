@@ -34,7 +34,7 @@ class GitIgnoreListAPI(BaseAPI):
             return lines_data
 
         elif format_ == "json":
-            _data: dict[str, TTemplate] = json.loads(response.text)
+            _data: dict[str, TTemplate] = response.json()
             json_data = [
                 TemplateModel.from_dict(template) for template in _data.values()
             ]
@@ -50,6 +50,6 @@ class GitIgnoreAPI(BaseAPI):
 
     @staticmethod
     def get(*keys: str) -> str:
-        response = requests.get(GitIgnoreAPI.url(), params=keys)
+        response = requests.get(f"{GitIgnoreAPI.url()}/{','.join(keys)}")
         response.raise_for_status()
         return str(response.text)  # need to appease mypy

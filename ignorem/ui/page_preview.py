@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 
 from gi.repository import Adw, GObject, Gdk, Gtk
 
@@ -9,7 +10,7 @@ from ignorem.utils import worker
 
 @Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/page-preview")
 class PreviewPage(Adw.NavigationPage):
-    __gtype_name__ = "PreviewPage"
+    __gtype_name__: str = "PreviewPage"
 
     preview_stack: Adw.ViewStack = Gtk.Template.Child()
     preview_page: Adw.ViewStackPage = Gtk.Template.Child()
@@ -19,14 +20,22 @@ class PreviewPage(Adw.NavigationPage):
     loading_page: Adw.ViewStackPage = Gtk.Template.Child()
     preview_status_page: Adw.ViewStackPage = Gtk.Template.Child()
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._is_loading: bool = False
         self._controller = AppController.instance()
-        self._init()
+        self.bind_property(
+            "is-loading",
+            self.preview_stack,
+            "visible-child-name",
+            GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+            lambda *_: self.loading_page.get_name()
+            if self.is_loading
+            else self.preview_page.get_name(),
+        )
 
     @Gtk.Template.Callback()
-    def on_preview_showing(self, _):
+    def on_preview_showing(self, _: Any) -> None:
         if self._controller.selected_templates():
             self.fetch_template()
             self.populate_selected_pills()
@@ -39,29 +48,28 @@ class PreviewPage(Adw.NavigationPage):
             )
 
     @worker.run("on_fetch_template_finished")
-    def fetch_template(self):
+    def fetch_template(self) -> None:
         result = self._controller.request_template()
         buffer = Gtk.TextBuffer(text=result)
         self.preview_textview.set_buffer(buffer)
 
-    def on_fetch_template_finished(self, result: None):
-        print(result)
+    def on_fetch_template_finished(self, result: None) -> None:
         self.is_loading = False
 
     @worker.run
-    def populate_selected_pills(self):
+    def populate_selected_pills(self) -> None:
         templates = self._controller.selected_templates()
         for template in templates:
             self.preview_selected_box.append(TemplatePill(template))
 
     @Gtk.Template.Callback()
-    def on_copy_template(self, button: Gtk.Button):
+    def on_copy_template(self, button: Gtk.Button) -> None:
         text = self.preview_textview.get_buffer().props.text
         clipboard = Gdk.Display.get_clipboard(Gdk.Display.get_default())
         clipboard.set(text)
 
     @Gtk.Template.Callback()
-    def on_save_template(self, button: Gtk.Button):
+    def on_save_template(self, button: Gtk.Button) -> None:
         dialog = Gtk.FileChooserNative(
             action=Gtk.FileChooserAction.SAVE,
             title="Save template",
@@ -72,23 +80,23 @@ class PreviewPage(Adw.NavigationPage):
         dialog.connect("response", self.on_save_response)
         dialog.show()
 
-    def on_save_response(self, dialog: Gtk.FileChooserNative, response: int):
+    def on_save_response(self, dialog: Gtk.FileChooserNative, response: int) -> None:
         if response == Gtk.ResponseType.ACCEPT:
             file = dialog.get_file()
             self.save_template(file)
 
     @worker.run
-    def save_template(self, path: str):
-        path = Path(path)
+    def save_template(self, path: str) -> None:
         text = self.preview_textview.get_buffer().props.text
-        path.write_text(text)
+        file_path = Path(path)
+        file_path.write_text(text)
 
     @Gtk.Template.Callback()
-    def on_preview_hiding(self, _):
+    def on_preview_hiding(self, _: Any) -> None:
         self.reset_page()
 
     @worker.run
-    def reset_page(self):
+    def reset_page(self) -> None:
         self._controller.reset()
         self.preview_selected_box.clear()
         self.preview_textview.get_buffer().props.text = ""
@@ -98,19 +106,8 @@ class PreviewPage(Adw.NavigationPage):
         return self._is_loading
 
     @is_loading.setter
-    def is_loading(self, value: bool):
+    def is_loading(self, value: bool) -> None:
         self._is_loading = value
-
-    def _init(self):
-        self.bind_property(
-            "is-loading",
-            self.preview_stack,
-            "visible-child-name",
-            GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
-            lambda *_: self.loading_page.get_name()
-            if self.is_loading
-            else self.preview_page.get_name(),
-        )
 
 
 GObject.type_register(PreviewPage)

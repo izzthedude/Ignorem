@@ -4,7 +4,10 @@ import os
 from typing import Any, Mapping, Self, Sequence, Type
 
 JSONLike = (
-    Mapping[str, str | int | bool] | Mapping[str, "JSONLike"] | Sequence["JSONLike"]
+    Mapping[str, str | int | bool]
+    | Mapping[str, Any]
+    | Mapping[str, Mapping[str, Any]]
+    | Sequence[Mapping[str, Any]]
 )
 PathLike = os.PathLike | str
 
@@ -25,7 +28,7 @@ class Singleton:
         return super().__new__(cls)
 
     @classmethod
-    def instance(cls: Type[Self]) -> Self | Singleton:
+    def instance(cls: Type[Self]) -> Self:
         if cls not in cls._instance:
             cls._instance[cls] = cls()
-        return cls._instance[cls]
+        return cls._instance[cls]  # type: ignore

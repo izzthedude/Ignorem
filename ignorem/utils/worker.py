@@ -72,8 +72,10 @@ def run(
         @wraps(method_)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
             self = args[0]
-            callback = getattr(self, callback_name)
-            error_callback = getattr(self, error_callback_name)
+            callback = getattr(self, callback_name) if callback_name else None
+            error_callback = (
+                getattr(self, error_callback_name) if error_callback_name else None
+            )
             return run_task(  # type: ignore
                 self,
                 method_,
