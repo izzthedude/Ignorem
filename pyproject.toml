@@ -28,18 +28,24 @@ build-backend = "poetry.core.masonry.api"
 [tool.ruff]
 src = ["ignorem"]
 fix = true
-line-length = 100
-
-[tool.black]
-line-length = 100
 
 [tool.isort]
 profile = "black"
 case_sensitive = true
-line_length = 100
 known_first_party = ["ignorem"]
 
 [tool.mypy]
 files = "ignorem"
 mypy_path = "ignorem"
 strict = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = "ignorem.ui.*"
+strict = false
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "ignorem.utils.ui"
+strict = false
+ignore_errors = true

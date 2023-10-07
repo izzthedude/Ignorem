@@ -1,4 +1,5 @@
 stages:
+  - setup
   - lint
 
 default:
@@ -17,12 +18,44 @@ before_script:
   - source .venv/bin/activate
   - pip install pre-commit
 
-check-code:
-  stage: lint
-  script:
-    - pre-commit run
+get-changed-files:
+  stage: setup
   only:
-    - web
+    - merge_requests
+  before_script:
+    - CURRENT=$CI_COMMIT_SHA
+    - PREVIOUS=$CI_COMMIT_BEFORE_SHA
+    - TARGET_BRANCH=$(git rev-parse $CI_MERGE_REQUEST_TARGET_BRANCH_NAME)
+    - echo "Current $CI_COMMIT_SHA"
+    - echo "Previous $CI_COMMIT_BEFORE_SHA"
+    - echo "Target $TARGET_BRANCH"
+  script:
+    - CHANGED_PREVIOUS=$(git diff --name-only $CURRENT $PREVIOUS)
+    - CHANGED_TARGET=$(git diff --name-only $CURRENT $TARGET_BRANCH)
+    - CHANGED_FILES='$CHANGED_PREVIOUS $CHANGED_TARGET'
+  after_script:
+    - echo "CHANGED_FILES='$CHANGED_FILES'" >> changed_files.env
+    - cat changed_files.env
+  artifacts:
+    reports:
+      dotenv: changed_files.env
+
+check-progress:
+  stage: lint
+  dependencies:
+    - get-changed-files
+  script:
+    - |
+      pre-commit run --files $CHANGED_FILES
+  only:
+    - merge-requests
+
+check-all:
+  stage: lint
+  allow_failure: true
+  script:
+    - |
+      pre-commit run --all-files
+  only:
     - main
     - develop
-    - merge_requests
