@@ -42,7 +42,6 @@ explicit_package_bases = true
 [[tool.mypy.overrides]]
 module = [
     "ignorem.ui.*",
-    "ignorem.utils.ui"
 ]
 strict = false
 ignore_errors = true
