@@ -36,6 +36,7 @@ known_first_party = ["ignorem"]
 
 [tool.mypy]
 strict = true
+explicit_package_bases = true
 
 [[tool.mypy.overrides]]
 module = [

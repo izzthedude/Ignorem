@@ -7,10 +7,12 @@ default:
 
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  PRE_COMMIT_HOME: "$CI_PROJECT_DIR/.cache/pre-commit"
 
 cache:
   paths:
     - .cache/pip
+    - .cache/pre-commit
 
 before_script:
   - python --version ; pip --version
@@ -48,18 +50,15 @@ check-progress:
   dependencies:
     - get-changed-files
   script:
-    - |
-      echo "Changed files = $CHANGED_FILES"
-      pre-commit run --files $CHANGED_FILES
+    - echo "Changed files = $CHANGED_FILES"
+    - pre-commit run --files $CHANGED_FILES
   only:
     - merge_requests
 
 check-all:
   stage: lint
-  allow_failure: true
   script:
-    - |
-      pre-commit run --all-files
+    - pre-commit run --all-files
   only:
     - main
     - develop
