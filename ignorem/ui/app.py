@@ -18,17 +18,17 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import sys
+from typing import Optional
 
-from gi.repository import Adw, Gio, Gtk
+from gi.repository import Adw, GLib, Gio, Gtk
 
 from ignorem import settings
-from ignorem.controller import AppController
 from ignorem.ui.window_main import MainWindow
 from ignorem.utils import ui
 
 
 class IgnoremApp(Adw.Application):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             application_id=settings.APP_ID, flags=Gio.ApplicationFlags.DEFAULT_FLAGS
         )
@@ -37,15 +37,19 @@ class IgnoremApp(Adw.Application):
         ui.create_action(self, "quit", lambda *_: self.quit(), ["<primary>q"])
         self.set_accels_for_action("win.show-help-overlay", ["<primary>question"])
 
-    def do_activate(self):
+    def do_activate(self) -> None:
         if not self.props.active_window:
             self.main_window = MainWindow(application=self)
         self.main_window.show()
 
-    def on_refresh_action(self, action, _):
+    def on_refresh_action(
+        self, action: Gio.SimpleAction, param: Optional[GLib.Variant]
+    ) -> None:
         self.main_window.search_page.on_refresh()
 
-    def on_about_action(self, action, _):
+    def on_about_action(
+        self, action: Gio.SimpleAction, param: Optional[GLib.Variant]
+    ) -> None:
         about = Adw.AboutWindow(
             transient_for=self.props.active_window,
             application_name=settings.APP_NAME,
@@ -60,11 +64,7 @@ class IgnoremApp(Adw.Application):
         )
         about.present()
 
-    def on_preferences_action(self, widget, _):
-        print("app.preferences action activated")
 
-
-def main(version):
-    AppController.instance()  # Initialise controller
+def main(version: str) -> int:
     app = IgnoremApp()
     return app.run(sys.argv)

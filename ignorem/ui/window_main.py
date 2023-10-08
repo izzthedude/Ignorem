@@ -18,11 +18,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 from typing import Any
 
-from gi.repository import Adw, GObject, Gio, Gtk
+from gi.repository import Adw, Gio, Gtk
 
 from ignorem import settings
 from ignorem.ui.page_preview import PreviewPage
 from ignorem.ui.page_search import SearchPage
+from ignorem.utils import ui
 
 
 @Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/window-main")
@@ -53,7 +54,7 @@ class MainWindow(Adw.ApplicationWindow):
             "/com/github/izzthedude/Ignorem/ui/help-overlay"
         )
         shortcuts_window = builder.get_object("help_overlay")
-        self.set_help_overlay(shortcuts_window)
+        self.set_help_overlay(shortcuts_window)  # type: ignore
 
 
-GObject.type_register(MainWindow)
+ui.register_type(MainWindow)

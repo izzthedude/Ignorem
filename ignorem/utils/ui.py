@@ -1,27 +1,24 @@
-from typing import Callable, Optional, ParamSpec, TypeVar
+from typing import Any, Callable, Optional, ParamSpec, Type, TypeVar
 
-from gi.repository import Adw, Gio
+from gi.repository import Adw, GObject, Gio, Gtk
 
 P = ParamSpec("P")
 T = TypeVar("T")
 
 
 def create_action(
-    source: Adw.Application | Adw.ApplicationWindow,
+    app: Adw.Application | Gtk.Application,
     action_name: str,
     callback: Callable[P, T],
     shortcuts: Optional[list[str]] = None,
 ) -> None:
     action = Gio.SimpleAction.new(action_name, None)
     action.connect("activate", callback)
-    source.add_action(action)
-
+    app.add_action(action)
     if shortcuts:
-        app = source
-        origin = "app"
+        app.set_accels_for_action(f"app.{action_name}", shortcuts)
 
-        if isinstance(source, Adw.ApplicationWindow):
-            app = source.get_application()
-            origin = "win"
 
-        app.set_accels_for_action(f"{origin}.{action_name}", shortcuts)
+def register_type(class_: Type[Any]) -> None:
+    # Created as a workaround for untyped-def errors
+    GObject.type_register(class_)  # type: ignore

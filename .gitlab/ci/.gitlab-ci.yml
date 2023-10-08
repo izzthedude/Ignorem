@@ -24,15 +24,15 @@ get-changed-files:
     - merge_requests
   before_script:
     - git fetch
-    - CURRENT_BRANCH=$(git rev-parse HEAD)
-    - PREVIOUS_BRANCH=$(git rev-parse HEAD~1)
+    - CURRENT_COMMIT=$(git rev-parse HEAD)
+    - PREVIOUS_COMMIT=$(git rev-parse HEAD~1)
     - TARGET_BRANCH=$(git rev-parse "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME")
-    - echo "Current $CURRENT_BRANCH"
-    - echo "Previous $PREVIOUS_BRANCH"
+    - echo "Current $CURRENT_COMMIT"
+    - echo "Previous $PREVIOUS_COMMIT"
     - echo "Target $TARGET_BRANCH"
   script:
-    - CHANGED_PREVIOUS=$(git diff --name-only $CURRENT_BRANCH $PREVIOUS_BRANCH | sed 's/.*/& /;$!s/$//' | tr -d '\n')
-    - CHANGED_TARGET=$(git diff --name-only $CURRENT_BRANCH $TARGET_BRANCH | sed 's/.*/& /;$!s/$//' | tr -d '\n')
+    - CHANGED_PREVIOUS=$(git diff --name-only $CURRENT_COMMIT $PREVIOUS_COMMIT | tr '\n' ' ')
+    - CHANGED_TARGET=$(git diff --name-only $CURRENT_COMMIT $TARGET_BRANCH | tr '\n' ' ')
     - CHANGED_FILES="$CHANGED_PREVIOUS $CHANGED_TARGET"
     - echo "Changed from last commit = $CHANGED_TARGET"
     - echo "Changed from last commit = $CHANGED_PREVIOUS"

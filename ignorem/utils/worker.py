@@ -67,17 +67,17 @@ def run_task(
 def run(
     callback_name: str = "",
     error_callback_name: str = "",
-) -> Callable[[Callable[P, T]], Callable[P, T]]:
-    def decorator(method_: Callable[P, T]) -> Callable[P, T]:
+) -> Callable[[Callable[P, T]], Callable[P, Gio.Task]]:
+    def decorator(method_: Callable[P, T]) -> Callable[P, Gio.Task]:
         @wraps(method_)
-        def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> Gio.Task:
             self = args[0]
             callback = getattr(self, callback_name) if callback_name else None
             error_callback = (
                 getattr(self, error_callback_name) if error_callback_name else None
             )
-            return run_task(  # type: ignore
-                self,
+            return run_task(
+                self,  # type: ignore
                 method_,
                 args=args,
                 kwargs=kwargs,

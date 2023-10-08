@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from gi.repository import GObject, Gtk
+from gi.repository import Gtk
 
 from ignorem.gitignoreio.models import TemplateModel
+from ignorem.utils import ui
 
 
 class TemplatePillBox(Gtk.FlowBox):
@@ -18,19 +19,19 @@ class TemplatePillBox(Gtk.FlowBox):
     def pills(self) -> list[TemplatePill]:
         return self._pills
 
-    def append(self, pill: TemplatePill) -> None:
-        super().append(pill)
+    def add_pill(self, pill: TemplatePill) -> None:
+        self.append(pill)
         pill.parent_box = self
         self._pills.append(pill)
 
-    def remove(self, pill: TemplatePill) -> None:
-        super().remove(pill)
+    def remove_pill(self, pill: TemplatePill) -> None:
+        self.remove(pill)
         pill.parent_box = None
         self._pills.remove(pill)
 
     def clear(self) -> None:
         while len(self._pills) > 0:
-            self.remove(self._pills[0])
+            self.remove_pill(self._pills[0])
 
 
 class TemplatePill(Gtk.Box):
@@ -100,7 +101,7 @@ class DeletablePill(TemplatePill):
         self.action_button: Gtk.Button
 
 
-GObject.type_register(TemplatePillBox)
-GObject.type_register(TemplatePill)
-GObject.type_register(AddablePill)
-GObject.type_register(DeletablePill)
+ui.register_type(TemplatePillBox)
+ui.register_type(TemplatePill)
+ui.register_type(AddablePill)
+ui.register_type(DeletablePill)

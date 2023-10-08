@@ -36,18 +36,15 @@ known_first_party = ["ignorem"]
 
 [tool.mypy]
 strict = true
-show_error_codes = true
-explicit_package_bases = true
 
 [[tool.mypy.overrides]]
 module = [
-    "ignorem.ui.*",
+    "ignorem.ui.page_preview",
+    "ignorem.ui.page_search",
+    "ignorem.ui.window_main"
 ]
-strict = false
-ignore_errors = true
-
-[[tool.mypy.overrides]]
-module = [
-    "requests"
+disable_error_code = [
+    "assignment",
+    "method-assign",
+    "truthy-function"
 ]
-ignore_missing_imports = true

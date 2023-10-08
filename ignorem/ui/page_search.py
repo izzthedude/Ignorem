@@ -4,11 +4,11 @@ from gi.repository import Adw, GObject, Gdk, Gtk
 
 from ignorem.controller import AppController
 from ignorem.ui.widgets import AddablePill, DeletablePill, TemplatePill, TemplatePillBox
-from ignorem.utils import worker
+from ignorem.utils import ui, worker
 
 
 @Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/page-search")
-class SearchPage(Adw.NavigationPage):
+class SearchPage(Adw.NavigationPage):  # type: ignore
     __gtype_name__: str = "SearchPage"
 
     search_stack: Adw.ViewStack = Gtk.Template.Child()
@@ -44,12 +44,12 @@ class SearchPage(Adw.NavigationPage):
         for template in templates:
             pill = AddablePill(template)
             pill.action_button.connect("clicked", self.on_suggestion_clicked, pill)
-            self.suggestions_pillbox.append(pill)
+            self.suggestions_pillbox.add_pill(pill)
 
     def on_suggestion_clicked(self, _: Gtk.Button, pill: AddablePill) -> None:
         selected_pill = DeletablePill(pill.template)
         selected_pill.action_button.connect("clicked", self.on_selected_deleted, pill)
-        self.selected_pillbox.append(selected_pill)
+        self.selected_pillbox.add_pill(selected_pill)
 
         pill.set_sensitive(False)
         self._update_actionbar_visibility()
@@ -70,7 +70,7 @@ class SearchPage(Adw.NavigationPage):
     def is_loading(self) -> bool:
         return self._is_loading
 
-    @is_loading.setter
+    @is_loading.setter  # type: ignore
     def is_loading(self, value: bool) -> None:
         self._is_loading = value
 
@@ -166,4 +166,4 @@ class SearchPage(Adw.NavigationPage):
             self.suggestions_box.set_visible(False)
 
 
-GObject.type_register(SearchPage)
+ui.register_type(SearchPage)

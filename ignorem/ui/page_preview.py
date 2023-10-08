@@ -5,11 +5,11 @@ from gi.repository import Adw, GObject, Gdk, Gtk
 
 from ignorem.controller import AppController
 from ignorem.ui.widgets import TemplatePill, TemplatePillBox
-from ignorem.utils import worker
+from ignorem.utils import ui, worker
 
 
 @Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/page-preview")
-class PreviewPage(Adw.NavigationPage):
+class PreviewPage(Adw.NavigationPage):  # type: ignore
     __gtype_name__: str = "PreviewPage"
 
     preview_stack: Adw.ViewStack = Gtk.Template.Child()
@@ -44,7 +44,7 @@ class PreviewPage(Adw.NavigationPage):
         else:
             self.preview_status_page.set_title("No templates were selected.")
             self.preview_stack.set_visible_child_name(
-                self.preview_status_page.get_name()
+                self.preview_status_page.get_name()  # type: ignore
             )
 
     @worker.run("on_fetch_template_finished")
@@ -56,16 +56,16 @@ class PreviewPage(Adw.NavigationPage):
     def on_fetch_template_finished(self, result: None) -> None:
         self.is_loading = False
 
-    @worker.run
+    @worker.run()
     def populate_selected_pills(self) -> None:
         templates = self._controller.selected_templates()
         for template in templates:
-            self.preview_selected_box.append(TemplatePill(template))
+            self.preview_selected_box.add_pill(TemplatePill(template))
 
     @Gtk.Template.Callback()
     def on_copy_template(self, button: Gtk.Button) -> None:
         text = self.preview_textview.get_buffer().props.text
-        clipboard = Gdk.Display.get_clipboard(Gdk.Display.get_default())
+        clipboard = Gdk.Display.get_clipboard(Gdk.Display.get_default())  # type: ignore
         clipboard.set(text)
 
     @Gtk.Template.Callback()
@@ -83,9 +83,9 @@ class PreviewPage(Adw.NavigationPage):
     def on_save_response(self, dialog: Gtk.FileChooserNative, response: int) -> None:
         if response == Gtk.ResponseType.ACCEPT:
             file = dialog.get_file()
-            self.save_template(file)
+            self.save_template(file.get_path())  # type: ignore
 
-    @worker.run
+    @worker.run()
     def save_template(self, path: str) -> None:
         text = self.preview_textview.get_buffer().props.text
         file_path = Path(path)
@@ -95,7 +95,7 @@ class PreviewPage(Adw.NavigationPage):
     def on_preview_hiding(self, _: Any) -> None:
         self.reset_page()
 
-    @worker.run
+    @worker.run()
     def reset_page(self) -> None:
         self._controller.reset()
         self.preview_selected_box.clear()
@@ -105,9 +105,9 @@ class PreviewPage(Adw.NavigationPage):
     def is_loading(self) -> bool:
         return self._is_loading
 
-    @is_loading.setter
+    @is_loading.setter  # type: ignore
     def is_loading(self, value: bool) -> None:
         self._is_loading = value
 
 
-GObject.type_register(PreviewPage)
+ui.register_type(PreviewPage)
