@@ -1,4 +1,4 @@
-# Define values in enums.py from the top-most meson.build variables
+# Define values in settings.py from the top-most meson.build variables
 conf = configuration_data()
 conf.set('APP_ID', APP_ID)
 conf.set('APP_NAME', APP_NAME)
@@ -8,8 +8,8 @@ conf.set('APP_LICENSE', APP_LICENSE)
 conf.set('APP_WEBSITE', APP_WEBSITE)
 conf.set('APP_ISSUE_URL', APP_ISSUE_URL)
 configure_file(
-  input: 'enums.py',
-  output: 'enums.py',
+  input: 'settings.py',
+  output: 'settings.py',
   configuration: conf,
   install: true,
   install_dir: moduledir,
@@ -18,10 +18,12 @@ configure_file(
 
 ignorem_sources = [
   '__init__.py',
-  'app.py',
-  'gitignore.py',
+  'constants.py',
   'controller.py',
+  # settings.py no need, it's handled above.
 ]
-install_subdir('utils', install_dir: moduledir)
+install_subdir('base', install_dir: moduledir)
+install_subdir('gitignoreio', install_dir: moduledir)
 install_subdir('ui', install_dir: moduledir)
+install_subdir('utils', install_dir: moduledir)
 install_data(ignorem_sources, install_dir: moduledir)

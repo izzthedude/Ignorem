@@ -1,0 +1,64 @@
+stages:
+  - setup
+  - lint
+
+default:
+  image: python:3.11.5
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  PRE_COMMIT_HOME: "$CI_PROJECT_DIR/.cache/pre-commit"
+
+cache:
+  paths:
+    - .cache/pip
+    - .cache/pre-commit
+
+before_script:
+  - python --version ; pip --version
+  - python -m venv .venv
+  - source .venv/bin/activate
+  - pip install pre-commit
+
+get-changed-files:
+  stage: setup
+  only:
+    - merge_requests
+  before_script:
+    - git fetch
+    - CURRENT_COMMIT=$(git rev-parse HEAD)
+    - PREVIOUS_COMMIT=$(git rev-parse HEAD~1)
+    - TARGET_BRANCH=$(git rev-parse "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME")
+    - echo "Current $CURRENT_COMMIT"
+    - echo "Previous $PREVIOUS_COMMIT"
+    - echo "Target $TARGET_BRANCH"
+  script:
+    - CHANGED_PREVIOUS=$(git diff --name-only $CURRENT_COMMIT $PREVIOUS_COMMIT | tr '\n' ' ')
+    - CHANGED_TARGET=$(git diff --name-only $CURRENT_COMMIT $TARGET_BRANCH | tr '\n' ' ')
+    - CHANGED_FILES="$CHANGED_PREVIOUS"
+    - echo "Changed from last commit = $CHANGED_PREVIOUS"
+    - echo "Changed from target branch = $CHANGED_TARGET"
+    - echo "All changed files = $CHANGED_FILES"
+    - echo "CHANGED_FILES='$CHANGED_FILES'" >> changed_files.env
+    - cat changed_files.env
+  artifacts:
+    expire_in: 1 day
+    reports:
+      dotenv: changed_files.env
+
+lint-progress:
+  stage: lint
+  only:
+    - merge_requests
+  dependencies:
+    - get-changed-files
+  script:
+    - pre-commit run --files $CHANGED_FILES
+
+lint-all:
+  stage: lint
+  only:
+    - main
+    - develop
+  script:
+    - pre-commit run --all-files
