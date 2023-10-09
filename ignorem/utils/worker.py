@@ -1,6 +1,15 @@
 import traceback
 from functools import wraps
-from typing import Any, Callable, Iterable, Mapping, Optional, ParamSpec, TypeVar
+from typing import (
+    Any,
+    Callable,
+    ClassVar,
+    Iterable,
+    Mapping,
+    Optional,
+    ParamSpec,
+    TypeVar,
+)
 
 from gi.repository import GObject, Gio
 
@@ -9,7 +18,7 @@ T = TypeVar("T")
 
 
 class _TaskData:
-    values: dict[tuple[Any, Any], Any] = {}
+    values: ClassVar[dict[tuple[Any, Any], Any]] = {}
 
 
 def run_task(
@@ -27,8 +36,8 @@ def run_task(
 
         try:
             print(f"[WORKER]: Running '{name}' {args=} {kwargs=}")
-            args_ = args if args else tuple()
-            kwargs_ = kwargs if kwargs else dict()
+            args_ = args if args else ()
+            kwargs_ = kwargs if kwargs else {}
             result = func(*args_, **kwargs_)
 
         except Exception as err:

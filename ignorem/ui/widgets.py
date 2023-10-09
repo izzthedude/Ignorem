@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from gi.repository import Gtk
 
-from ignorem.gitignoreio.models import TemplateModel
 from ignorem.utils import ui
+
+if TYPE_CHECKING:
+    from ignorem.gitignoreio.models import TemplateModel
 
 
 class TemplatePillBox(Gtk.FlowBox):
@@ -40,8 +42,8 @@ class TemplatePill(Gtk.Box):
     def __init__(
         self,
         template: TemplateModel,
-        parent_box: Optional[TemplatePillBox] = None,
-        action_button: Optional[Gtk.Button] = None,
+        parent_box: TemplatePillBox | None = None,
+        action_button: Gtk.Button | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)

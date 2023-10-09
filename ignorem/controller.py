@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from ignorem.base.types import Singleton
 from ignorem.constants import Data
 from ignorem.gitignoreio.apis import GitIgnoreAPI, GitIgnoreListAPI
 from ignorem.gitignoreio.models import TemplateModel
-from ignorem.gitignoreio.types import TTemplate
 from ignorem.utils import files
+
+if TYPE_CHECKING:
+    from ignorem.gitignoreio.types import TTemplate
 
 
 class AppController(Singleton):

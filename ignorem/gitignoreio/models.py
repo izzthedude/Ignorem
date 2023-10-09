@@ -8,7 +8,7 @@ from ignorem.gitignoreio.types import TTemplate
 class TemplateModel:
     key: str
     name: str
-    fileName: str
+    fileName: str  # noqa: N815
     contents: str
 
     @classmethod

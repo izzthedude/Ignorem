@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from typing import Any, Mapping, Self, Sequence, Type
+from typing import Any, ClassVar, Mapping, Self, Sequence, Type
 
 JSONLike = (
     Mapping[str, str | int | bool]
@@ -20,15 +20,15 @@ class SingletonError(Exception):
 
 
 class Singleton:
-    _instance: dict[Type[Self], Self] = {}
+    _instance: ClassVar[dict[type[Self], Self]] = {}
 
-    def __new__(cls: Type[Self], *args: Any, **kwargs: Any) -> Self:
+    def __new__(cls: type[Self], *args: Any, **kwargs: Any) -> Self:
         if cls in cls._instance:
             raise SingletonError
         return super().__new__(cls)
 
     @classmethod
-    def instance(cls: Type[Self]) -> Self:
+    def instance(cls: type[Self]) -> Self:
         if cls not in cls._instance:
             cls._instance[cls] = cls()
         return cls._instance[cls]  # type: ignore

@@ -35,30 +35,30 @@ get-changed-files:
   script:
     - CHANGED_PREVIOUS=$(git diff --name-only $CURRENT_COMMIT $PREVIOUS_COMMIT | tr '\n' ' ')
     - CHANGED_TARGET=$(git diff --name-only $CURRENT_COMMIT $TARGET_BRANCH | tr '\n' ' ')
-    - CHANGED_FILES="$CHANGED_PREVIOUS $CHANGED_TARGET"
-    - echo "Changed from last commit = $CHANGED_TARGET"
+    - CHANGED_FILES="$CHANGED_PREVIOUS"
     - echo "Changed from last commit = $CHANGED_PREVIOUS"
+    - echo "Changed from target branch = $CHANGED_TARGET"
     - echo "All changed files = $CHANGED_FILES"
     - echo "CHANGED_FILES='$CHANGED_FILES'" >> changed_files.env
     - cat changed_files.env
   artifacts:
+    expire_in: 1 day
     reports:
       dotenv: changed_files.env
 
-check-progress:
+lint-progress:
   stage: lint
+  only:
+    - merge_requests
   dependencies:
     - get-changed-files
   script:
-    - echo "Changed files = $CHANGED_FILES"
     - pre-commit run --files $CHANGED_FILES
-  only:
-    - merge_requests
 
-check-all:
+lint-all:
   stage: lint
-  script:
-    - pre-commit run --all-files
   only:
     - main
     - develop
+  script:
+    - pre-commit run --all-files

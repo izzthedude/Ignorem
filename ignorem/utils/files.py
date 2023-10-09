@@ -9,5 +9,5 @@ def write_json(obj: JSONLike, path: PathLike) -> None:
 
 
 def read_json(path: PathLike) -> JSONLike:
-    with open(path, "r") as file:
+    with open(path) as file:
         return json.load(file)  # type: ignore
