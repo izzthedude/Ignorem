@@ -30,6 +30,7 @@ from ignorem.utils import ui
 class MainWindow(Adw.ApplicationWindow):
     __gtype_name__: str = "MainWindow"
 
+    navigation_view: Adw.NavigationView = Gtk.Template.Child()  # type: ignore
     search_page: SearchPage = Gtk.Template.Child()
     preview_page: PreviewPage = Gtk.Template.Child()
 

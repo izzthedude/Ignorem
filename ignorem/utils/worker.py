@@ -4,8 +4,6 @@ from typing import (
     Any,
     Callable,
     ClassVar,
-    Iterable,
-    Mapping,
     Optional,
     ParamSpec,
     TypeVar,
@@ -21,13 +19,13 @@ class _TaskData:
     values: ClassVar[dict[tuple[Any, Any], Any]] = {}
 
 
-def run_task(
+def run(
     source: GObject.Object,
     func: Callable[P, T],
-    args: Optional[Iterable[Any]] = None,
-    kwargs: Optional[Mapping[str, Any]] = None,
-    callback: Optional[Callable[[T], object]] = None,
-    error_callback: Optional[Callable[[BaseException], T]] = None,
+    args: P.args = None,
+    kwargs: P.kwargs = None,
+    callback: Optional[Callable[[T], None]] = None,
+    error_callback: Optional[Callable[[BaseException], None]] = None,
 ) -> Gio.Task:
     key = (source, func)
 
@@ -35,30 +33,27 @@ def run_task(
         name = func.__name__
 
         try:
-            print(f"[WORKER]: Running '{name}' {args=} {kwargs=}")
-            args_ = args if args else ()
-            kwargs_ = kwargs if kwargs else {}
-            result = func(*args_, **kwargs_)
+            print(f"[WORKER]: Running task '{name}'")
+            args_ = args or ()
+            kwargs_ = kwargs or {}
+            _TaskData.values[key] = func(*args_, **kwargs_)
 
         except Exception as err:
             print(f"[WORKER]: Failed to run '{name}' due to error:")
             traceback.print_exc()
-            result = err  # type: ignore
-
-        finally:
-            _TaskData.values[key] = result
+            _TaskData.values[key] = err
 
     def on_finish(*_: Any) -> None:
-        result = _TaskData.values.pop(key)
+        result = _TaskData.values[key]
 
         if isinstance(result, Exception) and error_callback:
             err_name = error_callback.__name__
-            print(f"[WORKER]: Running '{err_name}' args={result}.")
+            print(f"[WORKER]: Running error callback '{err_name}'")
             error_callback(result)
 
-        if callback:
+        elif callback:
             name = callback.__name__
-            print(f"[WORKER]: Running '{name}' args={result}")
+            print(f"[WORKER]: Running callback '{name}'")
             callback(result)
 
     task: Gio.Task = Gio.Task.new(source, None, None, None)
@@ -73,7 +68,7 @@ def run_task(
     return task
 
 
-def run(
+def run_decorator(
     callback_name: str = "",
     error_callback_name: str = "",
 ) -> Callable[[Callable[P, T]], Callable[P, Gio.Task]]:
@@ -85,7 +80,7 @@ def run(
             error_callback = (
                 getattr(self, error_callback_name) if error_callback_name else None
             )
-            return run_task(
+            return run(
                 self,  # type: ignore
                 method_,
                 args=args,

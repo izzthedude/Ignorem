@@ -14,16 +14,16 @@
             <child type='end'>
               <object class="GtkButton" id="save_button">
                 <property name="icon-name">document-save-symbolic</property>
-                <property name="tooltip-text">Save template to file</property>
-                <signal name="clicked" handler="on_save_template"/>
+                <property name="tooltip-text">Save to file</property>
+                <property name="action-name">app.save-template</property>
               </object>
             </child>
             <!-- Copy button -->
             <child type='end'>
               <object class="GtkButton" id="copy_button">
                 <property name="icon-name">edit-copy-symbolic</property>
-                <property name="tooltip-text">Copy template to clipboard</property>
-                <signal name="clicked" handler="on_copy_template"/>
+                <property name="tooltip-text">Copy to clipboard</property>
+                <property name="action-name">app.copy-template</property>
               </object>
             </child>
           </object>
@@ -49,7 +49,7 @@
                     <property name="spacing">10</property>
                     <!-- Selected template pills -->
                     <child>
-                      <object class="TemplatePillBox" id="preview_selected_box">
+                      <object class="TemplatePillBox" id="selected_pillbox">
                         <property name="halign">start</property>
                         <property name="min-children-per-line">2</property>
                       </object>
@@ -60,7 +60,7 @@
                         <property name="propagate-natural-height">true</property>
                         <property name="propagate-natural-width">true</property>
                         <child>
-                          <object class="GtkTextView" id="preview_textview">
+                          <object class="GtkTextView" id="template_textview">
                             <property name="editable">false</property>
                             <property name="cursor-visible">false</property>
                             <property name="monospace">true</property>
