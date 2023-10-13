@@ -113,6 +113,6 @@
       </object>
     </property>
     <signal name="showing" handler="on_preview_showing"/>
-    <signal name="hiding" handler="on_preview_hiding"/>
+    <signal name="hidden" handler="on_preview_hidden"/>
   </template>
 </interface>

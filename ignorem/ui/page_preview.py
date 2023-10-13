@@ -74,7 +74,7 @@ class PreviewPage(Adw.NavigationPage):  # type: ignore
         buffer.props.text = template
 
     @Gtk.Template.Callback()
-    def on_preview_hiding(self, _: Any) -> None:
+    def on_preview_hidden(self, _: Any) -> None:
         self.reset_page()
 
     def reset_page(self) -> None:
