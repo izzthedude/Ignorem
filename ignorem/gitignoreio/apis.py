@@ -37,17 +37,11 @@ class GitIgnoreListAPI(BaseAPI):
         response.raise_for_status()
 
         if format_ == "lines":
-            lines_data: list[str] = json.loads(response.text)
-            return lines_data
+            data: list[str] = json.loads(response.text)
+            return data
 
-        elif format_ == "json":
-            _data: dict[str, TTemplate] = response.json()
-            json_data = [
-                TemplateModel.from_dict(template) for template in _data.values()
-            ]
-            return json_data
-
-        raise ValueError("This method only accepts 'lines' or 'json'")
+        data_: dict[str, TTemplate] = response.json()
+        return [TemplateModel.from_dict(template) for template in data_.values()]
 
 
 class GitIgnoreAPI(BaseAPI):

@@ -23,8 +23,8 @@
               <object class="GtkButton" id="debug_button">
                 <property name="visible">true</property>
                 <property name="icon-name">dialog-warning-symbolic</property>
-                <property name="action-name">navigation.push</property>
-                <property name="action-target">'page-preview'</property>
+                <!-- <property name="action-name">navigation.push</property>-->
+                <!-- <property name="action-target">'page-preview'</property>-->
                 <signal name="clicked" handler="on_debug_clicked"/>
               </object>
             </child>
@@ -202,12 +202,10 @@
             <child type="center">
               <object class="GtkButton" id="create_button">
                 <property name="label">Create</property>
+                <property name="action-name">app.create-template</property>
                 <style>
                   <class name="suggested-action"/>
                 </style>
-                <signal name="clicked" handler="on_create_clicked"/>
-                <property name="action-name">navigation.push</property>
-                <property name="action-target">'page-preview'</property>
               </object>
             </child>
           </object>
@@ -221,7 +219,7 @@
     <section>
       <item>
         <attribute name="label" translatable="yes">_Refresh templates list</attribute>
-        <attribute name="action">app.refresh</attribute>
+        <attribute name="action">app.refresh-list</attribute>
       </item>
       <item>
         <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>

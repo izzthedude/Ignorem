@@ -4,7 +4,7 @@ from typing import Self, Sequence
 from ignorem.gitignoreio.types import TTemplate
 
 
-@dataclass
+@dataclass(frozen=True)
 class TemplateModel:
     key: str
     name: str

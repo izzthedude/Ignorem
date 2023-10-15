@@ -18,13 +18,15 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import sys
+from pathlib import Path
 from typing import Optional
 
-from gi.repository import Adw, GLib, Gio, Gtk
+from gi.repository import Adw, GLib, Gdk, Gio, Gtk
 
 from ignorem import settings
+from ignorem.controller import AppController
 from ignorem.ui.window_main import MainWindow
-from ignorem.utils import ui
+from ignorem.utils import ui, worker
 
 
 class IgnoremApp(Adw.Application):
@@ -32,7 +34,11 @@ class IgnoremApp(Adw.Application):
         super().__init__(
             application_id=settings.APP_ID, flags=Gio.ApplicationFlags.DEFAULT_FLAGS
         )
-        ui.create_action(self, "refresh", self.on_refresh_action)
+        self._controller = AppController.instance()
+        ui.create_action(self, "refresh-list", self.on_refresh_action)
+        ui.create_action(self, "create-template", self.on_create_template_action)
+        ui.create_action(self, "copy-template", self.on_copy_template_action)
+        ui.create_action(self, "save-template", self.on_save_template_action)
         ui.create_action(self, "about", self.on_about_action)
         ui.create_action(self, "quit", lambda *_: self.quit(), ["<primary>q"])
         self.set_accels_for_action("win.show-help-overlay", ["<primary>question"])
@@ -41,6 +47,52 @@ class IgnoremApp(Adw.Application):
         if not self.props.active_window:
             self.main_window = MainWindow(application=self)
         self.main_window.show()
+
+    def on_create_template_action(
+        self, action: Gio.SimpleAction, param: Optional[GLib.Variant]
+    ) -> None:
+        self.main_window.navigation_view.push_by_tag("page-preview")
+
+    def on_copy_template_action(
+        self, action: Gio.SimpleAction, param: Optional[GLib.Variant]
+    ) -> None:
+        template = self._controller.template_text
+        clipboard = Gdk.Display.get_clipboard(Gdk.Display.get_default())  # type: ignore
+        clipboard.set(template)
+
+    def on_save_template_action(
+        self, action: Gio.SimpleAction, param: Optional[GLib.Variant]
+    ) -> None:
+        dialog = Gtk.FileChooserNative(
+            transient_for=self.main_window,
+            action=Gtk.FileChooserAction.SAVE,
+            title="Save template",
+            accept_label="Save",
+            cancel_label="Cancel",
+        )
+        dialog.set_current_name(".gitignore")
+        dialog.connect("response", self.on_save_response)
+        dialog.show()
+
+    def on_save_response(self, dialog: Gtk.FileChooserNative, response: int) -> None:
+        if response == Gtk.ResponseType.ACCEPT:
+            file: Gio.File = dialog.get_file()  # type: ignore
+            worker.run(
+                self,
+                self.save_template,
+                (file.get_path(),),
+                callback=self.on_save_template_finished,
+                error_callback=lambda error: print(error),
+            )
+            self.save_template(file.get_path())  # type: ignore
+
+    def save_template(self, path: str) -> None:
+        text = self._controller.template_text
+        file_path = Path(path)
+        file_path.write_text(text)
+
+    def on_save_template_finished(self, result: None) -> None:
+        print("Successfully saved template.")  # TODO: Toast message?
 
     def on_refresh_action(
         self, action: Gio.SimpleAction, param: Optional[GLib.Variant]

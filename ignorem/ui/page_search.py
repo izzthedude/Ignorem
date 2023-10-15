@@ -3,6 +3,7 @@ from typing import Any
 from gi.repository import Adw, GObject, Gdk, Gtk
 
 from ignorem.controller import AppController
+from ignorem.gitignoreio.models import TemplateModel
 from ignorem.ui.widgets import AddablePill, DeletablePill, TemplatePill, TemplatePillBox
 from ignorem.utils import ui, worker
 
@@ -32,39 +33,8 @@ class SearchPage(Adw.NavigationPage):  # type: ignore
         self._init()
 
         # Fetch list on page init
-        self.populate_templates()
+        self.request_list()
         self.is_loading = True
-
-    @worker.run("on_refresh_finished")
-    def populate_templates(self, fetch: bool = False) -> None:
-        templates = self._controller.fetch_list(fetch)
-
-        # Populate suggestions box
-        self.suggestions_pillbox.clear()
-        for template in templates:
-            pill = AddablePill(template)
-            pill.action_button.connect("clicked", self.on_suggestion_clicked, pill)
-            self.suggestions_pillbox.add_pill(pill)
-
-    def on_suggestion_clicked(self, _: Gtk.Button, pill: AddablePill) -> None:
-        selected_pill = DeletablePill(pill.template)
-        selected_pill.action_button.connect("clicked", self.on_selected_deleted, pill)
-        self.selected_pillbox.add_pill(selected_pill)
-
-        pill.set_sensitive(False)
-        self._update_actionbar_visibility()
-
-    def on_selected_deleted(self, _: Gtk.Button, pill: AddablePill) -> None:
-        pill.set_sensitive(True)
-        self._update_actionbar_visibility()
-
-    def on_refresh(self) -> None:
-        if not self.is_loading:
-            self.populate_templates(True)
-            self.is_loading = True
-
-    def on_refresh_finished(self, result: None) -> None:
-        self.is_loading = False
 
     @GObject.Property(type=bool, default=False, nick="is-loading")
     def is_loading(self) -> bool:
@@ -73,6 +43,73 @@ class SearchPage(Adw.NavigationPage):  # type: ignore
     @is_loading.setter  # type: ignore
     def is_loading(self, value: bool) -> None:
         self._is_loading = value
+
+    def request_list(self, fetch: bool = False) -> None:
+        self.is_loading = True
+        worker.run(
+            self,
+            self._controller.request_list,
+            (fetch,),
+            callback=self.on_request_list_finished,
+            error_callback=self.on_request_list_error,
+        )
+
+    def on_request_list_finished(self, result: None) -> None:
+        self.populate_suggestions(self._controller.templates())
+        self.is_loading = False
+
+    def on_request_list_error(self, error: BaseException) -> None:
+        self.is_loading = False
+        print(error)  # TODO: Error page
+
+    @worker.run_decorator()
+    def populate_suggestions(self, templates: list[TemplateModel]) -> None:
+        self.suggestions_pillbox.clear()
+        for template in templates:
+            pill = AddablePill(template)
+            pill.set_sensitive(not self._controller.is_selected(template))
+            pill.action_button.connect("clicked", self.on_suggestion_clicked, pill)
+            self.suggestions_pillbox.add_pill(pill)
+
+    def on_suggestion_clicked(self, button: Gtk.Button, pill: AddablePill) -> None:
+        self._controller.add_selected(pill.template)
+
+        selected_pill = DeletablePill(pill.template)
+        selected_pill.action_button.connect(
+            "clicked", self.on_selected_clicked, selected_pill
+        )
+        self.selected_pillbox.add_pill(selected_pill)
+
+        pill.set_sensitive(False)
+        self._update_actionbar_visibility()
+
+    def on_selected_clicked(self, button: Gtk.Button, pill: DeletablePill) -> None:
+        self._controller.remove_selected(pill.template)
+        self.selected_pillbox.remove_pill(pill)
+
+        suggestion_pill = self.suggestions_pillbox.get_pill_by_template(pill.template)
+        suggestion_pill.set_sensitive(True)  # type: ignore
+
+        self._update_actionbar_visibility()
+
+    def on_refresh(self) -> None:
+        if not self.is_loading:
+            self.is_loading = True
+            worker.run(
+                self,
+                self._controller.request_list,
+                (True,),
+                callback=self.on_refresh_finished,
+                error_callback=self.on_refresh_error,
+            )
+
+    def on_refresh_finished(self, result: None) -> None:
+        self.populate_suggestions(self._controller.templates())
+        self.is_loading = False
+
+    def on_refresh_error(self, error: BaseException) -> None:
+        self.is_loading = False
+        print(error)
 
     @Gtk.Template.Callback()
     def on_search_changed(self, entry: Gtk.SearchEntry) -> None:
@@ -90,16 +127,6 @@ class SearchPage(Adw.NavigationPage):  # type: ignore
         self.no_results_label.set_visible(not bool(results))
         self.suggestions_box.set_visible(bool(text))
 
-    @Gtk.Template.Callback()
-    def on_create_clicked(self, button: Gtk.Button) -> None:
-        for pill in self.selected_pillbox.pills():
-            self._controller.add_selected_template(pill.template)
-        self.search_entry.set_text("")
-
-    @Gtk.Template.Callback()
-    def on_debug_clicked(self, button: Gtk.Button) -> None:
-        print("debug")
-
     def on_suggestions_visible(
         self, _: Any, __: Any, allocation: Gdk.Rectangle
     ) -> None:
@@ -108,6 +135,10 @@ class SearchPage(Adw.NavigationPage):  # type: ignore
 
     def _update_actionbar_visibility(self) -> None:
         self.search_actionbar.set_revealed(bool(self.selected_pillbox.pills()))
+
+    @Gtk.Template.Callback()
+    def on_debug_clicked(self, button: Gtk.Button) -> None:
+        print("debug")
 
     def _init(self) -> None:
         # Have to bind here cause it wouldn't work in the ui file for some reason
@@ -119,6 +150,14 @@ class SearchPage(Adw.NavigationPage):  # type: ignore
             lambda *_: self.loading_page.get_name()
             if self.is_loading
             else self.search_page.get_name(),
+        )
+
+        self.bind_property(
+            "is-loading",
+            self.search_actionbar,
+            "revealed",
+            GObject.BindingFlags.DEFAULT | GObject.BindingFlags.SYNC_CREATE,
+            lambda *_: not self.is_loading and bool(self._controller.selected()),
         )
 
         self.suggestions_pillbox.set_filter_func(self._pillbox_filter_func)

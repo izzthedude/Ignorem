@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from gi.repository import Gtk
 
@@ -20,6 +20,15 @@ class TemplatePillBox(Gtk.FlowBox):
 
     def pills(self) -> list[TemplatePill]:
         return self._pills
+
+    def templates(self) -> list[TemplateModel]:
+        return [pill.template for pill in self._pills]
+
+    def get_pill_by_template(self, template: TemplateModel) -> TemplatePill | None:
+        for pill in self._pills:
+            if pill.template == template:
+                return pill
+        return None
 
     def add_pill(self, pill: TemplatePill) -> None:
         self.append(pill)
@@ -79,8 +88,7 @@ class TemplatePill(Gtk.Box):
     def _transform_label(self, text: str, has_action_button: bool = False) -> str:
         start_space = 5
         end_space = 14 if has_action_button else start_space
-        final_text = " " * start_space + text + " " * end_space
-        return final_text
+        return " " * start_space + text + " " * end_space
 
 
 class AddablePill(TemplatePill):

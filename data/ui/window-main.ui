@@ -8,7 +8,7 @@
     <child>
       <object class="AdwToastOverlay" id="toast_overlay">
         <child>
-          <object class="AdwNavigationView">
+          <object class="AdwNavigationView" id="navigation_view">
             <!-- Search Page -->
             <child>
               <object class="SearchPage" id="search_page"/>
