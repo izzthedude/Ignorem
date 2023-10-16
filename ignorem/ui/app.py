@@ -59,6 +59,7 @@ class IgnoremApp(Adw.Application):
         template = self._controller.template_text
         clipboard = Gdk.Display.get_clipboard(Gdk.Display.get_default())  # type: ignore
         clipboard.set(template)
+        self.main_window.toast_message("Successfully copied template to clipboard")
 
     def on_save_template_action(
         self, action: Gio.SimpleAction, param: Optional[GLib.Variant]
@@ -82,7 +83,7 @@ class IgnoremApp(Adw.Application):
                 self.save_template,
                 (file.get_path(),),
                 callback=self.on_save_template_finished,
-                error_callback=lambda error: print(error),
+                error_callback=self.on_save_template_error,
             )
             self.save_template(file.get_path())  # type: ignore
 
@@ -92,7 +93,10 @@ class IgnoremApp(Adw.Application):
         file_path.write_text(text)
 
     def on_save_template_finished(self, result: None) -> None:
-        print("Successfully saved template.")  # TODO: Toast message?
+        self.main_window.toast_message("Successfully saved template to file.")
+
+    def on_save_template_error(self, error: BaseException) -> None:
+        self.main_window.toast_message(f"Failed to save template to file: {error}")
 
     def on_refresh_action(
         self, action: Gio.SimpleAction, param: Optional[GLib.Variant]

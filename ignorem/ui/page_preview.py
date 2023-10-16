@@ -1,6 +1,6 @@
 from typing import Any
 
-from gi.repository import Adw, GObject, Gtk
+from gi.repository import Adw, Gtk
 
 from ignorem.controller import AppController
 from ignorem.gitignoreio.models import TemplateModel
@@ -11,8 +11,6 @@ from ignorem.utils import ui
 @Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/page-preview")
 class PreviewPage(Adw.NavigationPage):  # type: ignore
     __gtype_name__: str = "PreviewPage"
-
-    ERROR_OCCURRED = "error-occurred"
 
     preview_stack: Adw.ViewStack = Gtk.Template.Child()
     preview_page: Adw.ViewStackPage = Gtk.Template.Child()
@@ -46,14 +44,3 @@ class PreviewPage(Adw.NavigationPage):  # type: ignore
 
 
 ui.register_type(PreviewPage)
-ui.register_signal(
-    PreviewPage.ERROR_OCCURRED,
-    PreviewPage,
-    GObject.SignalFlags.RUN_FIRST,
-    GObject.TYPE_NONE,
-    (
-        str,  # icon_name
-        str,  # title
-        str,  # description
-    ),
-)

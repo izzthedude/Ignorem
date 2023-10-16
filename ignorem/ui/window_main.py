@@ -30,6 +30,8 @@ from ignorem.utils import ui
 class MainWindow(Adw.ApplicationWindow):
     __gtype_name__: str = "MainWindow"
 
+    toast_overlay: Adw.ToastOverlay = Gtk.Template.Child()
+
     navigation_view: Adw.NavigationView = Gtk.Template.Child()  # type: ignore
     search_page: SearchPage = Gtk.Template.Child()
     preview_page: PreviewPage = Gtk.Template.Child()
@@ -45,6 +47,10 @@ class MainWindow(Adw.ApplicationWindow):
         self._bind_settings()
 
         self.search_page.connect(SearchPage.ERROR_OCCURRED, self.on_error_occurred)
+
+    def toast_message(self, message: str) -> None:
+        toast = Adw.Toast(title=message, timeout=5)
+        self.toast_overlay.add_toast(toast)
 
     def on_error_occurred(
         self, page: SearchPage, icon_name: str, title: str, description: str
