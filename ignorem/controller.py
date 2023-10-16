@@ -1,8 +1,12 @@
+import logging
+
 from ignorem.base.types import Singleton
 from ignorem.constants import Data
 from ignorem.gitignoreio.apis import GitIgnoreAPI, GitIgnoreListAPI
 from ignorem.gitignoreio.models import TemplateModel
 from ignorem.utils import files
+
+logger = logging.getLogger(__name__)
 
 
 class AppController(Singleton):
@@ -12,6 +16,8 @@ class AppController(Singleton):
         self._template_text: str = ""
 
     def request_list(self, fetch: bool = False) -> None:
+        logger.info("Requesting template list")
+
         if not Data.CACHE_FILE.exists() or fetch:
             self._fetch_list()
 
@@ -26,6 +32,7 @@ class AppController(Singleton):
 
     def request_template(self) -> None:
         keys = [template.key for template in self.selected()]
+        logger.info(f"Requesting template text with keys: {keys}")
         self.template_text = GitIgnoreAPI.get(*keys)
 
     def templates(self) -> list[TemplateModel]:
@@ -38,9 +45,11 @@ class AppController(Singleton):
         return template in self._selected
 
     def add_selected(self, template: TemplateModel) -> None:
+        logger.debug(f"Adding template: {template.key}")
         self._selected.append(template)
 
     def remove_selected(self, template: TemplateModel) -> None:
+        logger.debug(f"Removing template: {template.key}")
         self._selected.remove(template)
 
     def clear_selected(self) -> None:
@@ -55,6 +64,7 @@ class AppController(Singleton):
         self._template_text = value
 
     def _fetch_list(self) -> None:
+        logger.debug("Fetching template list")
         templates = [template.to_dict() for template in GitIgnoreListAPI.get("json")]
         files.write_json(templates, Data.CACHE_FILE)  # type: ignore
 

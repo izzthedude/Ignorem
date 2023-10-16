@@ -1,12 +1,15 @@
+import logging
 from typing import Any
 
 from gi.repository import Adw, GObject, Gdk, Gtk
-from requests.exceptions import ConnectionError, ReadTimeout
+from requests.exceptions import ConnectionError, Timeout
 
 from ignorem.controller import AppController
 from ignorem.gitignoreio.models import TemplateModel
 from ignorem.ui.widgets import AddablePill, DeletablePill, TemplatePill, TemplatePillBox
 from ignorem.utils import ui, worker
+
+logger = logging.getLogger(__name__)
 
 
 @Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/page-search")
@@ -68,6 +71,10 @@ class SearchPage(Adw.NavigationPage):  # type: ignore
         description = "An unexpected error occurred. Please check the logs."
 
         if isinstance(error, ConnectionError):
+            logger.error(
+                f"A network error has occurred while requesting template list: {error}",
+                exc_info=error,
+            )
             icon_name = "network-error-symbolic"
             title = "Network Error"
             description = (
@@ -75,18 +82,33 @@ class SearchPage(Adw.NavigationPage):  # type: ignore
                 "DNS failure, refused connection, or no internet connection."
             )
 
-        elif isinstance(error, ReadTimeout):
+        elif isinstance(error, Timeout):
+            logger.error(
+                f"Connection timed out while requesting template list: {error}",
+                exc_info=error,
+            )
             icon_name = "network-no-route-symbolic"
             title = "Connection Timed Out"
             description = (
-                "Request took too long to respond. Check your internet connection."
+                "Request took too long to respond. Check your internet "
+                "connection speed or the gitignore.io website."
             )
+
+        else:
+            logger.error(
+                f"An error occurred while requesting template list: {error}",
+                exc_info=error,
+            )
+
+        # TODO: File not found error
 
         self.emit(self.ERROR_OCCURRED, icon_name, title, description)
         self.is_loading = False
 
     @worker.run_decorator()
     def populate_suggestions(self, templates: list[TemplateModel]) -> None:
+        logger.debug(f"Populating suggestions: {len(templates)} total templates")
+
         self.suggestions_pillbox.clear()
         for template in templates:
             pill = AddablePill(template)
@@ -164,7 +186,7 @@ class SearchPage(Adw.NavigationPage):  # type: ignore
 
     @Gtk.Template.Callback()
     def on_debug_clicked(self, button: Gtk.Button) -> None:
-        print("debug")
+        logger.debug("Debug button clicked")
 
     def _init(self) -> None:
         self.bind_property(
