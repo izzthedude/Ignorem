@@ -33,7 +33,7 @@
         <!-- Contents of the search page -->
         <property name="content">
           <object class="AdwViewStack" id="search_stack">
-            <!-- Main content -->
+            <!-- Search page -->
             <child>
               <object class="AdwViewStackPage" id="search_page">
                 <property name="name">search-page</property>
@@ -202,7 +202,7 @@
             <child type="center">
               <object class="GtkButton" id="create_button">
                 <property name="label">Create</property>
-                <property name="action-name">app.create-template</property>
+                <signal name="clicked" handler="on_create_clicked"/>
                 <style>
                   <class name="suggested-action"/>
                 </style>

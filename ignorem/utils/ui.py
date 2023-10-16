@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional, ParamSpec, Type, TypeVar
+from typing import Any, Callable, Iterable, Optional, ParamSpec, Type, TypeVar
 
 from gi.repository import Adw, GObject, Gio, Gtk
 
@@ -22,3 +22,14 @@ def create_action(
 def register_type(class_: Type[Any]) -> None:
     # Created as a workaround for untyped-def errors
     GObject.type_register(class_)  # type: ignore
+
+
+def register_signal(
+    name: str,
+    source: GObject.Object | type[GObject.Object],
+    flags: GObject.SignalFlags | int,
+    return_type: Any,
+    param_types: Iterable[type[Any]],
+) -> None:
+    # Wrapper function for typing
+    GObject.signal_new(name, source, flags, return_type, param_types)  # type: ignore

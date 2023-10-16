@@ -73,41 +73,6 @@
                 </property>
               </object>
             </child>
-            <!-- Loading spinner -->
-            <child>
-              <object class="AdwViewStackPage" id="loading_page">
-                <property name="name">loading-page</property>
-                <property name="visible" bind-source="PreviewPage" bind-property="is-loading"
-                          bind-flags="default | sync-create"/>
-                <property name="child">
-                  <object class="GtkBox">
-                    <property name="valign">center</property>
-                    <property name="halign">center</property>
-                    <child>
-                      <object class="GtkSpinner">
-                        <property name="height-request">30</property>
-                        <property name="width-request">30</property>
-                        <property name="spinning" bind-source="loading_page" bind-property="visible"
-                                  bind-flags="default | sync-create"/>
-                      </object>
-                    </child>
-                  </object>
-                </property>
-              </object>
-            </child>
-            <!-- Failed page -->
-            <child>
-              <object class="AdwViewStackPage">
-                <property name="name">status-page</property>
-                <property name="child">
-                  <object class="AdwStatusPage" id="preview_status_page">
-                    <property name="name">status-page</property>
-                    <property name="icon-name">dialog-error-symbolic</property>
-                    <property name="title">An error occurred</property>
-                  </object>
-                </property>
-              </object>
-            </child>
           </object>
         </property>
       </object>

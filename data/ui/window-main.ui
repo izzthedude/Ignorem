@@ -17,6 +17,52 @@
             <child>
               <object class="PreviewPage" id="preview_page"/>
             </child>
+            <!-- Error page -->
+            <child>
+              <object class="AdwNavigationPage" id="error_page">
+                <property name="tag">page-error</property>
+                <property name="child">
+                  <object class="AdwToolbarView">
+                    <child type="top">
+                      <!-- Header bar -->
+                      <object class="AdwHeaderBar"/>
+                    </child>
+                    <property name="content">
+                      <!-- Status page -->
+                      <object class="AdwStatusPage" id="status_page">
+                        <property name="name">status-page</property>
+                        <property name="child">
+                          <object class="GtkBox" id="status_child_box">
+                            <property name="orientation">horizontal</property>
+                            <property name="valign">center</property>
+                            <property name="halign">center</property>
+                            <property name="spacing">10</property>
+                            <child>
+                              <!-- Home button -->
+                              <object class="GtkButton" id="home_button">
+                                <property name="label">Back to Search</property>
+                                <signal name="clicked" handler="on_home_clicked"/>
+                                <style>
+                                  <class name="suggested-action"/>
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <!-- Logs button -->
+                              <object class="GtkButton" id="logs_button">
+                                <property name="label">Check logs</property>
+                                <property name="visible">false</property>
+                                <signal name="clicked" handler="on_logs_clicked"/>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </property>
+                  </object>
+                </property>
+              </object>
+            </child>
           </object>
         </child>
       </object>
