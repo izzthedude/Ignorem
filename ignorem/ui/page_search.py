@@ -1,6 +1,7 @@
 from typing import Any
 
 from gi.repository import Adw, GObject, Gdk, Gtk
+from requests.exceptions import ConnectionError, ReadTimeout
 
 from ignorem.controller import AppController
 from ignorem.gitignoreio.models import TemplateModel
@@ -11,6 +12,8 @@ from ignorem.utils import ui, worker
 @Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/page-search")
 class SearchPage(Adw.NavigationPage):  # type: ignore
     __gtype_name__: str = "SearchPage"
+
+    ERROR_OCCURRED = "error-occurred"
 
     search_stack: Adw.ViewStack = Gtk.Template.Child()
 
@@ -25,6 +28,7 @@ class SearchPage(Adw.NavigationPage):  # type: ignore
     loading_page: Adw.ViewStackPage = Gtk.Template.Child()
 
     search_actionbar: Gtk.ActionBar = Gtk.Template.Child()
+    create_button: Gtk.Button = Gtk.Template.Child()
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -51,16 +55,35 @@ class SearchPage(Adw.NavigationPage):  # type: ignore
             self._controller.request_list,
             (fetch,),
             callback=self.on_request_list_finished,
-            error_callback=self.on_request_list_error,
+            error_callback=self.on_request_error,
         )
 
     def on_request_list_finished(self, result: None) -> None:
         self.populate_suggestions(self._controller.templates())
         self.is_loading = False
 
-    def on_request_list_error(self, error: BaseException) -> None:
+    def on_request_error(self, error: BaseException) -> None:
+        icon_name = "dialog-error-symbolic"
+        title = "Unexpected Error"
+        description = "An unexpected error occurred. Please check the logs."
+
+        if isinstance(error, ConnectionError):
+            icon_name = "network-error-symbolic"
+            title = "Network Error"
+            description = (
+                "A network error has occurred. This may be caused by a "
+                "DNS failure, refused connection, or no internet connection."
+            )
+
+        elif isinstance(error, ReadTimeout):
+            icon_name = "network-no-route-symbolic"
+            title = "Connection Timed Out"
+            description = (
+                "Request took too long to respond. Check your internet connection."
+            )
+
+        self.emit(self.ERROR_OCCURRED, icon_name, title, description)
         self.is_loading = False
-        print(error)  # TODO: Error page
 
     @worker.run_decorator()
     def populate_suggestions(self, templates: list[TemplateModel]) -> None:
@@ -99,17 +122,9 @@ class SearchPage(Adw.NavigationPage):  # type: ignore
                 self,
                 self._controller.request_list,
                 (True,),
-                callback=self.on_refresh_finished,
-                error_callback=self.on_refresh_error,
+                callback=self.on_request_list_finished,
+                error_callback=self.on_request_error,
             )
-
-    def on_refresh_finished(self, result: None) -> None:
-        self.populate_suggestions(self._controller.templates())
-        self.is_loading = False
-
-    def on_refresh_error(self, error: BaseException) -> None:
-        self.is_loading = False
-        print(error)
 
     @Gtk.Template.Callback()
     def on_search_changed(self, entry: Gtk.SearchEntry) -> None:
@@ -133,15 +148,25 @@ class SearchPage(Adw.NavigationPage):  # type: ignore
         entry_allocation = self.search_entry.get_allocation()
         self.suggestions_box.set_size_request(entry_allocation.width, -1)
 
-    def _update_actionbar_visibility(self) -> None:
-        self.search_actionbar.set_revealed(bool(self.selected_pillbox.pills()))
+    @Gtk.Template.Callback()
+    def on_create_clicked(self, button: Gtk.Button) -> None:
+        self.is_loading = True
+        worker.run(
+            self,
+            self._controller.request_template,
+            callback=self.on_request_template_finished,
+            error_callback=self.on_request_error,
+        )
+
+    def on_request_template_finished(self, result: None) -> None:
+        self.create_button.activate_action("app.create-template")
+        self.is_loading = False
 
     @Gtk.Template.Callback()
     def on_debug_clicked(self, button: Gtk.Button) -> None:
         print("debug")
 
     def _init(self) -> None:
-        # Have to bind here cause it wouldn't work in the ui file for some reason
         self.bind_property(
             "is-loading",
             self.search_stack,
@@ -204,5 +229,19 @@ class SearchPage(Adw.NavigationPage):  # type: ignore
         if not allocation.contains_point(int(x), int(y)):
             self.suggestions_box.set_visible(False)
 
+    def _update_actionbar_visibility(self) -> None:
+        self.search_actionbar.set_revealed(bool(self.selected_pillbox.pills()))
+
 
 ui.register_type(SearchPage)
+ui.register_signal(
+    SearchPage.ERROR_OCCURRED,
+    SearchPage,
+    GObject.SignalFlags.RUN_FIRST,
+    GObject.TYPE_NONE,
+    (
+        str,  # icon_name
+        str,  # title
+        str,  # description
+    ),
+)
