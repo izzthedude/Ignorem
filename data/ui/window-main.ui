@@ -51,7 +51,6 @@
                               <!-- Logs button -->
                               <object class="GtkButton" id="logs_button">
                                 <property name="label">Check logs</property>
-                                <property name="visible">false</property>
                                 <signal name="clicked" handler="on_logs_clicked"/>
                               </object>
                             </child>

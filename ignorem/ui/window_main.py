@@ -52,6 +52,10 @@ class MainWindow(Adw.ApplicationWindow):
         toast = Adw.Toast(title=message, timeout=5)
         self.toast_overlay.add_toast(toast)
 
+    def toast_action(self, name: str, label: str, message: str) -> None:
+        toast = Adw.Toast(action_name=name, button_label=label, title=message)
+        self.toast_overlay.add_toast(toast)
+
     def on_error_occurred(
         self, page: SearchPage, icon_name: str, title: str, description: str
     ) -> None:
@@ -66,7 +70,7 @@ class MainWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_logs_clicked(self, button: Gtk.Button) -> None:
-        print("logs")  # TODO
+        button.activate_action("app.open-logs")
 
     def _setup_help_overlay(self) -> None:
         builder = Gtk.Builder.new_from_resource(

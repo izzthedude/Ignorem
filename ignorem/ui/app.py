@@ -25,6 +25,7 @@ from typing import Optional
 from gi.repository import Adw, GLib, Gdk, Gio, Gtk
 
 from ignorem import settings
+from ignorem.constants import Data
 from ignorem.controller import AppController
 from ignorem.ui.window_main import MainWindow
 from ignorem.utils import ui, worker
@@ -42,6 +43,7 @@ class IgnoremApp(Adw.Application):
         ui.create_action(self, "create-template", self.on_create_template_action)
         ui.create_action(self, "copy-template", self.on_copy_template_action)
         ui.create_action(self, "save-template", self.on_save_template_action)
+        ui.create_action(self, "open-logs", self.on_open_logs_action)
         ui.create_action(self, "about", self.on_about_action)
         ui.create_action(self, "quit", lambda *_: self.quit(), ["<primary>q"])
         self.set_accels_for_action("win.show-help-overlay", ["<primary>question"])
@@ -110,14 +112,21 @@ class IgnoremApp(Adw.Application):
 
     def on_save_template_error(self, error: BaseException) -> None:
         logger.warning(f"Failed to save template due to error: {error}", exc_info=error)
-        self.main_window.toast_message(
-            "Failed to save template to file. Check logs for more info."
+        self.main_window.toast_action(
+            "app.open-logs",
+            "Check logs",
+            "Failed to save template to file. Check logs for more info.",
         )
 
     def on_refresh_action(
         self, action: Gio.SimpleAction, param: Optional[GLib.Variant]
     ) -> None:
         self.main_window.search_page.on_refresh()
+
+    def on_open_logs_action(
+        self, action: Gio.SimpleAction, param: Optional[GLib.Variant]
+    ) -> None:
+        Gio.app_info_launch_default_for_uri(f"file://{Data.LOGS_FILE}")
 
     def on_about_action(
         self, action: Gio.SimpleAction, param: Optional[GLib.Variant]
