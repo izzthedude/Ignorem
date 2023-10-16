@@ -1,4 +1,4 @@
-import traceback
+import logging
 from functools import wraps
 from typing import (
     Any,
@@ -10,6 +10,8 @@ from typing import (
 )
 
 from gi.repository import GObject, Gio
+
+logger = logging.getLogger(__name__)
 
 P = ParamSpec("P")
 T = TypeVar("T")
@@ -33,14 +35,14 @@ def run(
         name = func.__name__
 
         try:
-            print(f"[WORKER]: Running task '{name}'")
+            logger.debug(f"Running task '{name}'")
             args_ = args or ()
             kwargs_ = kwargs or {}
             _TaskData.values[key] = func(*args_, **kwargs_)
+            logger.debug(f"Successfully run task '{name}'")
 
         except Exception as err:
-            print(f"[WORKER]: Failed to run '{name}' due to error:")
-            traceback.print_exc()
+            logger.warning(f"Failed to run task '{name}'")
             _TaskData.values[key] = err
 
     def on_finish(*_: Any) -> None:
@@ -48,12 +50,12 @@ def run(
 
         if isinstance(result, Exception) and error_callback:
             err_name = error_callback.__name__
-            print(f"[WORKER]: Running error callback '{err_name}'")
+            logger.debug(f"Running error callback '{err_name}'")
             error_callback(result)
 
         elif callback:
             name = callback.__name__
-            print(f"[WORKER]: Running callback '{name}'")
+            logger.debug(f"Running callback '{name}'")
             callback(result)
 
     task: Gio.Task = Gio.Task.new(source, None, None, None)

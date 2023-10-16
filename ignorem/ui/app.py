@@ -17,6 +17,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+import logging
 import sys
 from pathlib import Path
 from typing import Optional
@@ -27,6 +28,8 @@ from ignorem import settings
 from ignorem.controller import AppController
 from ignorem.ui.window_main import MainWindow
 from ignorem.utils import ui, worker
+
+logger = logging.getLogger(__name__)
 
 
 class IgnoremApp(Adw.Application):
@@ -44,9 +47,14 @@ class IgnoremApp(Adw.Application):
         self.set_accels_for_action("win.show-help-overlay", ["<primary>question"])
 
     def do_activate(self) -> None:
+        logger.info("Starting application")
         if not self.props.active_window:
             self.main_window = MainWindow(application=self)
         self.main_window.show()
+
+    def do_shutdown(self) -> None:
+        # FIXME: This causes an Adw critical error but idk how to fix it
+        logger.info("Shutting down application")
 
     def on_create_template_action(
         self, action: Gio.SimpleAction, param: Optional[GLib.Variant]
@@ -59,7 +67,10 @@ class IgnoremApp(Adw.Application):
         template = self._controller.template_text
         clipboard = Gdk.Display.get_clipboard(Gdk.Display.get_default())  # type: ignore
         clipboard.set(template)
-        self.main_window.toast_message("Successfully copied template to clipboard")
+
+        message = "Successfully copied template to clipboard"
+        logger.info(message)
+        self.main_window.toast_message(message)
 
     def on_save_template_action(
         self, action: Gio.SimpleAction, param: Optional[GLib.Variant]
@@ -85,18 +96,23 @@ class IgnoremApp(Adw.Application):
                 callback=self.on_save_template_finished,
                 error_callback=self.on_save_template_error,
             )
-            self.save_template(file.get_path())  # type: ignore
 
     def save_template(self, path: str) -> None:
         text = self._controller.template_text
         file_path = Path(path)
         file_path.write_text(text)
+        logging.debug(f"Successfully saved template to {path}")
 
     def on_save_template_finished(self, result: None) -> None:
-        self.main_window.toast_message("Successfully saved template to file.")
+        message = "Successfully saved template to file"
+        logger.info(message)
+        self.main_window.toast_message(message)
 
     def on_save_template_error(self, error: BaseException) -> None:
-        self.main_window.toast_message(f"Failed to save template to file: {error}")
+        logger.warning(f"Failed to save template due to error: {error}", exc_info=error)
+        self.main_window.toast_message(
+            "Failed to save template to file. Check logs for more info."
+        )
 
     def on_refresh_action(
         self, action: Gio.SimpleAction, param: Optional[GLib.Variant]
