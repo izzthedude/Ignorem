@@ -1,28 +1,38 @@
-[tool.poetry]
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
 name = "ignorem"
 version = "0.1.0"
-description = "Generate .gitignore file"
-authors = ["Izzat Z. <izzat.zainir11@gmail.com>"]
+description = "Generate .gitignore files"
+authors = [
+    { name = "Izzat Z.", email = "izzat.zainir11@gmail.com" }
+]
 readme = "README.md"
+license = {file = "COPYING"}
+requires-python = "==3.11.6"
+dependencies = [
+    "pygobject==3.46.0",
+    "requests==2.31.0"
+]
 
-[tool.poetry.dependencies]
-python = "3.11.5"
-pygobject = "3.46.0"
-requests = "2.31.0"
+[tool.setuptools]
+packages = ["ignorem"]
 
-[tool.poetry.group.dev.dependencies]
-ruff = "^0.0.292"
-black = "^23.9.1"
-pre-commit = "^3.4.0"
-
-[tool.poetry.group.typing.dependencies]
-mypy = "^1.6.0"
-types-requests = "^2.31.0.8"
-pygobject-stubs = "^2.9.0"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[project.optional-dependencies]
+dev = [
+    "pre-commit"
+]
+lint = [
+    "ruff",
+    "black"
+]
+typing = [
+    "mypy",
+    "types-requests",
+    "pygobject-stubs"
+]
 
 [tool.ruff]
 src = ["ignorem"]
