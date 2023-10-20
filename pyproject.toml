@@ -11,35 +11,38 @@ authors = [
 ]
 readme = "README.md"
 license = {file = "COPYING"}
-requires-python = "==3.11.6"
+requires-python = "==3.11.5"
 dependencies = [
     "pygobject==3.46.0",
     "requests==2.31.0"
 ]
 
-[tool.setuptools]
-packages = ["ignorem"]
-
 [project.optional-dependencies]
 dev = [
-    "pre-commit"
+    "pre-commit==3.5.0"
 ]
-lint = [
-    "ruff",
-    "black"
-]
-typing = [
-    "mypy",
+dev-types = [
     "types-requests",
     "pygobject-stubs"
 ]
+dev-lint = [
+    "ruff==0.1.1",
+    "black==23.10.0",
+    "mypy==1.6.1"
+]
+
+[tool.setuptools]
+packages = ["ignorem"]
 
 [tool.ruff]
 src = ["ignorem"]
 fix = true
 show-fixes = true
 extend-select = [
+    "RUF",  # Ruff
+    "PL",   # PyLint
     "N",    # pep8-naming
+    "E",    # pycodestyle errors
     "W",    # pycodestyle warning
     "I",    # isort
     "UP",   # pyupgrade
@@ -51,6 +54,10 @@ extend-select = [
     "TCH",  # flake8-type-checking
     "TID",  # flake8-tidy-imports
 ]
+ignore = [
+    "PLR2004",  # Magic value
+    "PLR0913"   # Too many args
+]
 
 [tool.ruff.isort]
 case-sensitive = true
@@ -58,6 +65,7 @@ known-first-party = ["ignorem"]
 
 [tool.mypy]
 strict = true
+show_error_codes = true
 explicit_package_bases = true
 
 [[tool.mypy.overrides]]
