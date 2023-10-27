@@ -41,6 +41,6 @@ if __name__ == "__main__":
     resource = Gio.Resource.load(os.path.join(pkgdatadir, "ignorem.gresource"))
     resource._register()
 
-    from ignorem.ui import app
+    from ignorem.gui import app
 
     sys.exit(app.main(VERSION))

@@ -1,6 +1,10 @@
+from pathlib import Path
 from typing import Any, Callable, Iterable, Optional, ParamSpec, Type, TypeVar
 
-from gi.repository import Adw, GObject, Gio, Gtk
+from gi.repository import Adw, GObject, Gdk, Gio, Gtk
+
+from ignorem.constants import Data
+from ignorem.utils.types_ import PathLike
 
 P = ParamSpec("P")
 T = TypeVar("T")
@@ -33,3 +37,17 @@ def register_signal(
 ) -> None:
     # Wrapper function for typing
     GObject.signal_new(name, source, flags, return_type, param_types)  # type: ignore
+
+
+def copy_to_clipboard(text: str) -> None:
+    clipboard = Gdk.Display.get_clipboard(Gdk.Display.get_default())  # type: ignore
+    clipboard.set(text)
+
+
+def save_template(text: str, path: PathLike) -> None:
+    file_path = Path(path)
+    file_path.write_text(text)
+
+
+def open_logs() -> None:
+    Gio.app_info_launch_default_for_uri(f"file://{Data.LOGS_FILE}")

@@ -1,7 +1,7 @@
 from dataclasses import asdict, dataclass, fields
-from typing import Self, Sequence
+from typing import Iterable, Self
 
-from ignorem.gitignoreio.types import TTemplate
+from ignorem.gitignoreio.types_ import TTemplate
 
 
 @dataclass(frozen=True)
@@ -12,12 +12,12 @@ class TemplateModel:
     contents: str
 
     @classmethod
-    def fields(cls) -> Sequence[str]:
+    def fields(cls) -> Iterable[str]:
         return tuple(field.name for field in fields(cls))
 
     @classmethod
-    def from_dict(cls, data: TTemplate) -> Self:
+    def from_data(cls, data: TTemplate) -> Self:
         return cls(**data)
 
-    def to_dict(self) -> TTemplate:
+    def to_data(self) -> TTemplate:
         return asdict(self)  # type: ignore

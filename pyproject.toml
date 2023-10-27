@@ -54,7 +54,7 @@ extend-select = [
     "TCH",  # flake8-type-checking
     "TID",  # flake8-tidy-imports
 ]
-ignore = [
+extend-ignore = [
     "PLR2004",  # Magic value
     "PLR0913"   # Too many args
 ]
@@ -70,9 +70,8 @@ explicit_package_bases = true
 
 [[tool.mypy.overrides]]
 module = [
-    "ignorem.ui.page_preview",
-    "ignorem.ui.page_search",
-    "ignorem.ui.window_main"
+    "ignorem.gui.pages.*",
+    "ignorem.gui.window"
 ]
 disable_error_code = [
     "assignment",

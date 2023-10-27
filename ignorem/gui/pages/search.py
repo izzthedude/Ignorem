@@ -6,8 +6,14 @@ from requests.exceptions import ConnectionError, Timeout
 
 from ignorem.controller import AppController
 from ignorem.gitignoreio.models import TemplateModel
-from ignorem.ui.widgets import AddablePill, DeletablePill, TemplatePill, TemplatePillBox
-from ignorem.utils import ui, worker
+from ignorem.gui.utils import functions as gui
+from ignorem.gui.utils import worker
+from ignorem.gui.widgets import (
+    AddablePill,
+    DeletablePill,
+    TemplatePill,
+    TemplatePillBox,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -255,8 +261,8 @@ class SearchPage(Adw.NavigationPage):  # type: ignore
         self.search_actionbar.set_revealed(bool(self.selected_pillbox.pills()))
 
 
-ui.register_type(SearchPage)
-ui.register_signal(
+gui.register_type(SearchPage)
+gui.register_signal(
     SearchPage.ERROR_OCCURRED,
     SearchPage,
     GObject.SignalFlags.RUN_FIRST,

@@ -1,21 +1,19 @@
 import json
-from typing import TYPE_CHECKING, Literal, overload
+import posixpath
+from typing import Literal, overload
 
 import requests
 
 from ignorem.base.apis import BaseAPI
 from ignorem.gitignoreio.models import TemplateModel
-from ignorem.gitignoreio.urls import GITIGNORE_API
+from ignorem.gitignoreio.urls import GITIGNORE_API_URL
 from ignorem.settings import REQUEST_TIMEOUT
-
-if TYPE_CHECKING:
-    from ignorem.gitignoreio.types import TTemplate
 
 
 class GitIgnoreListAPI(BaseAPI):
     @staticmethod
     def url() -> str:
-        return f"{GITIGNORE_API}/list"
+        return posixpath.join(GITIGNORE_API_URL, "list")
 
     @staticmethod
     @overload
@@ -40,14 +38,15 @@ class GitIgnoreListAPI(BaseAPI):
             data: list[str] = json.loads(response.text)
             return data
 
-        data_: dict[str, TTemplate] = response.json()
-        return [TemplateModel.from_dict(template) for template in data_.values()]
+        return [
+            TemplateModel.from_data(template) for template in response.json().values()
+        ]
 
 
 class GitIgnoreAPI(BaseAPI):
     @staticmethod
     def url() -> str:
-        return f"{GITIGNORE_API}"
+        return GITIGNORE_API_URL
 
     @staticmethod
     def get(*keys: str) -> str:

@@ -1,10 +1,4 @@
-import os
-from typing import Any, ClassVar, Mapping, Self, Sequence
-
-JSONLike = (
-    Mapping[str, str | int | bool] | Mapping[str, "JSONLike"] | Sequence["JSONLike"]
-)
-PathLike = os.PathLike | str
+from typing import Any, ClassVar, Self
 
 
 class SingletonError(Exception):

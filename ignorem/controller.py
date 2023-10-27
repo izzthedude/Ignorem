@@ -1,6 +1,6 @@
 import logging
 
-from ignorem.base.types import Singleton
+from ignorem.base.singleton import Singleton
 from ignorem.constants import Data
 from ignorem.gitignoreio.apis import GitIgnoreAPI, GitIgnoreListAPI
 from ignorem.gitignoreio.models import TemplateModel
@@ -22,7 +22,7 @@ class AppController(Singleton):
             self._fetch_list()
 
         templates: list[TemplateModel] = [
-            TemplateModel.from_dict(template)  # type: ignore
+            TemplateModel.from_data(template)  # type: ignore
             for template in files.read_json(Data.CACHE_FILE)
         ]
 
@@ -65,8 +65,8 @@ class AppController(Singleton):
 
     def _fetch_list(self) -> None:
         logger.debug("Fetching template list")
-        templates = [template.to_dict() for template in GitIgnoreListAPI.get("json")]
-        files.write_json(templates, Data.CACHE_FILE)  # type: ignore
+        templates = [template.to_data() for template in GitIgnoreListAPI.get("json")]
+        files.write_json(templates, Data.CACHE_FILE)
 
     def _add_template(self, template: TemplateModel) -> None:
         self._templates.append(template)

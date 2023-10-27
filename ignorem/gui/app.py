@@ -19,16 +19,15 @@
 
 import logging
 import sys
-from pathlib import Path
 from typing import Optional
 
-from gi.repository import Adw, GLib, Gdk, Gio, Gtk
+from gi.repository import Adw, GLib, Gio, Gtk
 
 from ignorem import settings
-from ignorem.constants import Data
 from ignorem.controller import AppController
-from ignorem.ui.window_main import MainWindow
-from ignorem.utils import ui, worker
+from ignorem.gui.utils import functions as gui
+from ignorem.gui.utils import worker
+from ignorem.gui.window import IgnoremWindow
 
 logger = logging.getLogger(__name__)
 
@@ -39,43 +38,53 @@ class IgnoremApp(Adw.Application):
             application_id=settings.APP_ID, flags=Gio.ApplicationFlags.DEFAULT_FLAGS
         )
         self._controller = AppController.instance()
-        ui.create_action(self, "refresh-list", self.on_refresh_action)
-        ui.create_action(self, "create-template", self.on_create_template_action)
-        ui.create_action(self, "copy-template", self.on_copy_template_action)
-        ui.create_action(self, "save-template", self.on_save_template_action)
-        ui.create_action(self, "open-logs", self.on_open_logs_action)
-        ui.create_action(self, "about", self.on_about_action)
-        ui.create_action(self, "quit", lambda *_: self.quit(), ["<primary>q"])
+        gui.create_action(self, "refresh-list", self.on_refresh_action)
+        gui.create_action(self, "create-template", self.on_create_template_action)
+        gui.create_action(self, "copy-template", self.on_copy_template_action)
+        gui.create_action(self, "save-template", self.on_save_template_action)
+        gui.create_action(self, "open-logs", gui.open_logs)
+        gui.create_action(self, "about", self.on_about_action)
+        gui.create_action(self, "quit", lambda *_: self.quit(), ["<primary>q"])
         self.set_accels_for_action("win.show-help-overlay", ["<primary>question"])
 
     def do_activate(self) -> None:
         logger.info("Starting application")
         if not self.props.active_window:
-            self.main_window = MainWindow(application=self)
+            self.main_window = IgnoremWindow(application=self)
         self.main_window.show()
 
     def do_shutdown(self) -> None:
         # FIXME: This causes an Adw critical error but idk how to fix it
         logger.info("Shutting down application")
 
+    def on_refresh_action(
+        self,
+        action: Gio.SimpleAction,
+        param: Optional[GLib.Variant],
+    ) -> None:
+        self.main_window.search_page.on_refresh()
+
     def on_create_template_action(
-        self, action: Gio.SimpleAction, param: Optional[GLib.Variant]
+        self,
+        action: Gio.SimpleAction,
+        param: Optional[GLib.Variant],
     ) -> None:
         self.main_window.navigation_view.push_by_tag("page-preview")
 
     def on_copy_template_action(
-        self, action: Gio.SimpleAction, param: Optional[GLib.Variant]
+        self,
+        action: Gio.SimpleAction,
+        param: Optional[GLib.Variant],
     ) -> None:
-        template = self._controller.template_text
-        clipboard = Gdk.Display.get_clipboard(Gdk.Display.get_default())  # type: ignore
-        clipboard.set(template)
-
+        gui.copy_to_clipboard(self._controller.template_text)
         message = "Successfully copied template to clipboard"
         logger.info(message)
         self.main_window.toast_message(message)
 
     def on_save_template_action(
-        self, action: Gio.SimpleAction, param: Optional[GLib.Variant]
+        self,
+        action: Gio.SimpleAction,
+        param: Optional[GLib.Variant],
     ) -> None:
         dialog = Gtk.FileChooserNative(
             transient_for=self.main_window,
@@ -93,17 +102,14 @@ class IgnoremApp(Adw.Application):
             file: Gio.File = dialog.get_file()  # type: ignore
             worker.run(
                 self,
-                self.save_template,
-                (file.get_path(),),
+                gui.save_template,
+                (
+                    self._controller.template_text,
+                    file.get_path(),
+                ),
                 callback=self.on_save_template_finished,
                 error_callback=self.on_save_template_error,
             )
-
-    def save_template(self, path: str) -> None:
-        text = self._controller.template_text
-        file_path = Path(path)
-        file_path.write_text(text)
-        logging.debug(f"Successfully saved template to {path}")
 
     def on_save_template_finished(self, result: None) -> None:
         message = "Successfully saved template to file"
@@ -118,18 +124,10 @@ class IgnoremApp(Adw.Application):
             "Failed to save template to file. Check logs for more info.",
         )
 
-    def on_refresh_action(
-        self, action: Gio.SimpleAction, param: Optional[GLib.Variant]
-    ) -> None:
-        self.main_window.search_page.on_refresh()
-
-    def on_open_logs_action(
-        self, action: Gio.SimpleAction, param: Optional[GLib.Variant]
-    ) -> None:
-        Gio.app_info_launch_default_for_uri(f"file://{Data.LOGS_FILE}")
-
     def on_about_action(
-        self, action: Gio.SimpleAction, param: Optional[GLib.Variant]
+        self,
+        action: Gio.SimpleAction,
+        param: Optional[GLib.Variant],
     ) -> None:
         about = Adw.AboutWindow(
             transient_for=self.props.active_window,

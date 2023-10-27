@@ -5,8 +5,8 @@ from gi.repository import Adw, Gtk
 
 from ignorem.controller import AppController
 from ignorem.gitignoreio.models import TemplateModel
-from ignorem.ui.widgets import TemplatePill, TemplatePillBox
-from ignorem.utils import ui
+from ignorem.gui.utils import functions as gui
+from ignorem.gui.widgets import TemplatePill, TemplatePillBox
 
 logger = logging.getLogger(__name__)
 
@@ -53,4 +53,4 @@ class PreviewPage(Adw.NavigationPage):  # type: ignore
         self.template_textview.get_buffer().props.text = ""
 
 
-ui.register_type(PreviewPage)
+gui.register_type(PreviewPage)

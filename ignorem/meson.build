@@ -24,6 +24,6 @@ ignorem_sources = [
 ]
 install_subdir('base', install_dir: moduledir)
 install_subdir('gitignoreio', install_dir: moduledir)
-install_subdir('ui', install_dir: moduledir)
+install_subdir('gui', install_dir: moduledir)
 install_subdir('utils', install_dir: moduledir)
 install_data(ignorem_sources, install_dir: moduledir)

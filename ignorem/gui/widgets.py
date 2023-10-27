@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any
 
 from gi.repository import Gtk
 
-from ignorem.utils import ui
+from ignorem.gui.utils import functions as gui
 
 if TYPE_CHECKING:
     from ignorem.gitignoreio.models import TemplateModel
@@ -111,7 +111,7 @@ class DeletablePill(TemplatePill):
         self.action_button: Gtk.Button
 
 
-ui.register_type(TemplatePillBox)
-ui.register_type(TemplatePill)
-ui.register_type(AddablePill)
-ui.register_type(DeletablePill)
+gui.register_type(TemplatePillBox)
+gui.register_type(TemplatePill)
+gui.register_type(AddablePill)
+gui.register_type(DeletablePill)

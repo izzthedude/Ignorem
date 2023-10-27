@@ -1,4 +1,4 @@
-# window_main.py
+# window.py
 #
 # Copyright 2023 Izzat Z.
 #
@@ -21,13 +21,13 @@ from typing import Any
 from gi.repository import Adw, Gio, Gtk
 
 from ignorem import settings
-from ignorem.ui.page_preview import PreviewPage
-from ignorem.ui.page_search import SearchPage
-from ignorem.utils import ui
+from ignorem.gui.pages.preview import PreviewPage
+from ignorem.gui.pages.search import SearchPage
+from ignorem.gui.utils import functions as gui
 
 
 @Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/window-main")
-class MainWindow(Adw.ApplicationWindow):
+class IgnoremWindow(Adw.ApplicationWindow):
     __gtype_name__: str = "MainWindow"
 
     toast_overlay: Adw.ToastOverlay = Gtk.Template.Child()
@@ -92,4 +92,4 @@ class MainWindow(Adw.ApplicationWindow):
         )
 
 
-ui.register_type(MainWindow)
+gui.register_type(IgnoremWindow)
