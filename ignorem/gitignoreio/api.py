@@ -6,16 +6,15 @@ from typing import Literal, overload
 
 import requests
 
-from ignorem.base.apis import BaseAPI
+from ignorem.constants import URL
 from ignorem.gitignoreio.models import TemplateModel
-from ignorem.gitignoreio.urls import GITIGNORE_API_URL
 from ignorem.settings import REQUEST_TIMEOUT
 
 
-class GitIgnoreListAPI(BaseAPI):
+class GitIgnoreListAPI:
     @staticmethod
     def url() -> str:
-        return posixpath.join(GITIGNORE_API_URL, "list")
+        return posixpath.join(URL.GITIGNORE_API, "list")
 
     @staticmethod
     @overload
@@ -45,10 +44,10 @@ class GitIgnoreListAPI(BaseAPI):
         ]
 
 
-class GitIgnoreAPI(BaseAPI):
+class GitIgnoreAPI:
     @staticmethod
     def url() -> str:
-        return GITIGNORE_API_URL
+        return URL.GITIGNORE_API
 
     @staticmethod
     def get(*keys: str) -> str:
@@ -56,4 +55,4 @@ class GitIgnoreAPI(BaseAPI):
             f"{GitIgnoreAPI.url()}/{','.join(keys)}", timeout=REQUEST_TIMEOUT
         )
         response.raise_for_status()
-        return str(response.text)  # need to appease mypy
+        return response.text

@@ -1,7 +1,7 @@
 from dataclasses import asdict, dataclass, fields
 from typing import Iterable, Self
 
-from ignorem.gitignoreio.types_ import TTemplate
+from ignorem.gitignoreio.typings import TTemplate
 
 
 @dataclass(frozen=True)

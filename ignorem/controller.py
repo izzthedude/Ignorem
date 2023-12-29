@@ -4,7 +4,7 @@ import logging
 
 from ignorem.base.singleton import Singleton
 from ignorem.constants import Data
-from ignorem.gitignoreio.apis import GitIgnoreAPI, GitIgnoreListAPI
+from ignorem.gitignoreio.api import GitIgnoreAPI, GitIgnoreListAPI
 from ignorem.gitignoreio.models import TemplateModel
 from ignorem.utils import files
 
