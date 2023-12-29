@@ -1,18 +1,22 @@
+from __future__ import annotations
+
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from gi.repository import Adw, Gtk
 
 from ignorem.controller import AppController
-from ignorem.gitignoreio.models import TemplateModel
 from ignorem.gui.utils import functions as gui
 from ignorem.gui.widgets import TemplatePill, TemplatePillBox
+
+if TYPE_CHECKING:
+    from ignorem.gitignoreio.models import TemplateModel
 
 logger = logging.getLogger(__name__)
 
 
 @Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/page-preview")
-class PreviewPage(Adw.NavigationPage):  # type: ignore
+class PreviewPage(Adw.NavigationPage):
     __gtype_name__: str = "PreviewPage"
 
     preview_stack: Adw.ViewStack = Gtk.Template.Child()

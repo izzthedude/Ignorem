@@ -1,11 +1,12 @@
+from __future__ import annotations
+
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from gi.repository import Adw, GObject, Gdk, Gtk
 from requests.exceptions import ConnectionError, Timeout
 
 from ignorem.controller import AppController
-from ignorem.gitignoreio.models import TemplateModel
 from ignorem.gui.utils import functions as gui
 from ignorem.gui.utils import worker
 from ignorem.gui.widgets import (
@@ -15,11 +16,14 @@ from ignorem.gui.widgets import (
     TemplatePillBox,
 )
 
+if TYPE_CHECKING:
+    from ignorem.gitignoreio.models import TemplateModel
+
 logger = logging.getLogger(__name__)
 
 
 @Gtk.Template(resource_path="/com/github/izzthedude/Ignorem/ui/page-search")
-class SearchPage(Adw.NavigationPage):  # type: ignore
+class SearchPage(Adw.NavigationPage):
     __gtype_name__: str = "SearchPage"
 
     ERROR_OCCURRED = "error-occurred"

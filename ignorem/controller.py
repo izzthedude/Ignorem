@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 
 from ignorem.base.singleton import Singleton

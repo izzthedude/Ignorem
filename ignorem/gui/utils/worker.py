@@ -1,10 +1,11 @@
+from __future__ import annotations
+
 import logging
 from functools import wraps
 from typing import (
     Any,
     Callable,
     ClassVar,
-    Optional,
     ParamSpec,
     TypeVar,
 )
@@ -26,8 +27,8 @@ def run(
     func: Callable[P, T],
     args: P.args = None,
     kwargs: P.kwargs = None,
-    callback: Optional[Callable[[T], None]] = None,
-    error_callback: Optional[Callable[[BaseException], None]] = None,
+    callback: Callable[[T], None] | None = None,
+    error_callback: Callable[[BaseException], None] | None = None,
 ) -> Gio.Task:
     key = (source, func)
 

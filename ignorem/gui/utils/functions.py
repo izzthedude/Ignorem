@@ -1,10 +1,21 @@
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Any, Callable, Iterable, Optional, ParamSpec, Type, TypeVar
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Iterable,
+    ParamSpec,
+    TypeVar,
+)
 
 from gi.repository import Adw, GObject, Gdk, Gio, Gtk
 
 from ignorem.constants import Data
-from ignorem.utils.types_ import PathLike
+
+if TYPE_CHECKING:
+    from ignorem.utils.types_ import PathLike
 
 P = ParamSpec("P")
 T = TypeVar("T")
@@ -14,7 +25,7 @@ def create_action(
     app: Adw.Application | Gtk.Application,
     action_name: str,
     callback: Callable[P, T],
-    shortcuts: Optional[list[str]] = None,
+    shortcuts: list[str] | None = None,
 ) -> None:
     action = Gio.SimpleAction.new(action_name, None)
     action.connect("activate", callback)
@@ -23,7 +34,7 @@ def create_action(
         app.set_accels_for_action(f"app.{action_name}", shortcuts)
 
 
-def register_type(class_: Type[Any]) -> None:
+def register_type(class_: type[Any]) -> None:
     # Created as a workaround for untyped-def errors
     GObject.type_register(class_)  # type: ignore
 

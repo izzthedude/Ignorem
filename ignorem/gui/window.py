@@ -62,11 +62,11 @@ class IgnoremWindow(Adw.ApplicationWindow):
         self.status_page.set_icon_name(icon_name)
         self.status_page.set_title(title)
         self.status_page.set_description(description)
-        self.navigation_view.push_by_tag(self.error_page.get_tag())
+        self.navigation_view.push_by_tag(str(self.error_page.get_tag()))
 
     @Gtk.Template.Callback()
     def on_home_clicked(self, button: Gtk.Button) -> None:
-        self.navigation_view.pop_to_tag(self.search_page.get_tag())
+        self.navigation_view.pop_to_tag(str(self.search_page.get_tag()))
 
     @Gtk.Template.Callback()
     def on_logs_clicked(self, button: Gtk.Button) -> None:

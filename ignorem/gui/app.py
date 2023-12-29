@@ -17,9 +17,10 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+from __future__ import annotations
+
 import logging
 import sys
-from typing import Optional
 
 from gi.repository import Adw, GLib, Gio, Gtk
 
@@ -60,21 +61,21 @@ class IgnoremApp(Adw.Application):
     def on_refresh_action(
         self,
         action: Gio.SimpleAction,
-        param: Optional[GLib.Variant],
+        param: GLib.Variant | None,
     ) -> None:
         self.main_window.search_page.on_refresh()
 
     def on_create_template_action(
         self,
         action: Gio.SimpleAction,
-        param: Optional[GLib.Variant],
+        param: GLib.Variant | None,
     ) -> None:
         self.main_window.navigation_view.push_by_tag("page-preview")
 
     def on_copy_template_action(
         self,
         action: Gio.SimpleAction,
-        param: Optional[GLib.Variant],
+        param: GLib.Variant | None,
     ) -> None:
         gui.copy_to_clipboard(self._controller.template_text)
         message = "Successfully copied template to clipboard"
@@ -84,7 +85,7 @@ class IgnoremApp(Adw.Application):
     def on_save_template_action(
         self,
         action: Gio.SimpleAction,
-        param: Optional[GLib.Variant],
+        param: GLib.Variant | None,
     ) -> None:
         dialog = Gtk.FileChooserNative(
             transient_for=self.main_window,
@@ -127,7 +128,7 @@ class IgnoremApp(Adw.Application):
     def on_about_action(
         self,
         action: Gio.SimpleAction,
-        param: Optional[GLib.Variant],
+        param: GLib.Variant | None,
     ) -> None:
         about = Adw.AboutWindow(
             transient_for=self.props.active_window,
