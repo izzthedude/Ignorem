@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import logging
 
-from ignorem.base.singleton import Singleton
 from ignorem.constants import Data
 from ignorem.gitignoreio.api import GitIgnoreAPI, GitIgnoreListAPI
 from ignorem.gitignoreio.models import TemplateModel
 from ignorem.utils import files
+from ignorem.utils.singleton import Singleton
 
 logger = logging.getLogger(__name__)
 

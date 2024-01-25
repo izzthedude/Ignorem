@@ -15,7 +15,7 @@ from gi.repository import Adw, GObject, Gdk, Gio, Gtk
 from ignorem.constants import Data
 
 if TYPE_CHECKING:
-    from ignorem.utils.types_ import PathLike
+    from ignorem.utils.typings import PathLike
 
 P = ParamSpec("P")
 T = TypeVar("T")

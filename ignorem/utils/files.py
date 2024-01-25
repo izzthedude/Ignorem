@@ -1,6 +1,6 @@
 import json
 
-from ignorem.utils.types_ import JSONLike, PathLike
+from ignorem.utils.typings import JSONLike, PathLike
 
 
 def write_json(obj: JSONLike, path: PathLike) -> None:
